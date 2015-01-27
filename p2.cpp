@@ -82,6 +82,43 @@ int main(){
 			//credit = credit + digit*pow(10,D-p-1);
 			credit[p] = digit;
 		}
+				//cout << credit << endl;
+		//string creditString;
+		//creditString = to_string(credit);
+		//add null character to end
+		credit[D] = '\0';
+		creditlist.push_back(credit);
+				//cout << credit << endl;
+		//string creditString;
+		//creditString = to_string(credit);
+		//add null character to end
+		credit[D] = '\0';
+		creditlist.push_back(credit);
+				//cout << credit << endl;
+		//string creditString;
+		//creditString = to_string(credit);
+		//add null character to end
+		credit[D] = '\0';
+		creditlist.push_back(credit);
+				//cout << credit << endl;
+		//string creditString;
+		//creditString = to_string(credit);
+		//add null character to end
+		credit[D] = '\0';
+		creditlist.push_back(credit);
+				//cout << credit << endl;
+		//string creditString;
+		//creditString = to_string(credit);
+		//add null character to end
+		credit[D] = '\0';
+		creditlist.push_back(credit);
+				//cout << credit << endl;
+		//string creditString;
+		//creditString = to_string(credit);
+		//add null character to end
+		credit[D] = '\0';
+		creditlist.push_back(credit);
+		
 		//cout << credit << endl;
 		//string creditString;
 		//creditString = to_string(credit);
