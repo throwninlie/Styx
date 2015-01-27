@@ -5,6 +5,10 @@
 #include <utility>
 #include <string>
 //#include <set>
+
+///dfas/dfweg/awe/rw/g/wer/asgasljgawogwje
+
+//w/erwegaksdfkklslssllslsslls
 //#include <queue>
 using namespace std;
 int main(){
@@ -19,7 +23,16 @@ int main(){
 		//value is the credit card #
 		char value[25];
 		cin >> value;
+		//lolz
 
+		//sdfasdflkaweugow
+
+
+		//sdgaiowueraowiudg
+
+
+
+		//stuff
 		for(int k = 0; k < D; k++){
 			int d;
 			char di = value[k];
@@ -67,7 +80,16 @@ int main(){
 		//cout << credit << endl;
 		//string creditString;
 		//creditString = to_string(credit);
+		for(sdfioasudf){
 
+
+
+
+			sdfasgwiepowier
+
+			dgwpdirpowei
+			
+		}
 		//add null character to end
 		credit[D] = '\0';
 		creditlist.push_back(credit);
