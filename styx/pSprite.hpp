@@ -11,7 +11,7 @@ class pSprite{
         sprite.setTexture(tex);
         sprite.setTextureRect(sf::IntRect(10, 10, 100, 100));
         sprite.setColor(sf::Color(255, 255, 255, 200));
-        sprite.setPosition(100, 25);
+        sprite.setPosition(x, y);
         }
 };
 
