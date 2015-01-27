@@ -85,35 +85,6 @@ int main(){
 		//cout << credit << endl;
 		//string creditString;
 		//creditString = to_string(credit);
-		
-
-//other stuff
-
-
-
-
-
-
-
-
-
-		for(sdfioasudf){
-
-
-
-
-
-
-
-
-
-//spaces
-
-			sdfasgwiepowier
-
-			dgwpdirpowei
-			
-		}
 		//add null character to end
 		credit[D] = '\0';
 		creditlist.push_back(credit);
