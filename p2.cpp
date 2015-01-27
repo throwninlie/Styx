@@ -6,6 +6,9 @@
 #include <string>
 //#include <set>
 //#include <queue>
+///SOME RANDOM CRAP IN YOUR CODE
+//hAAAAAAANDS
+//HANDS WRITING WORDS
 using namespace std;
 int main(){
 	int N,M,D;
@@ -34,6 +37,8 @@ int main(){
 			mymap.insert(mymap.begin(),pair<string,char>(hashS,di));
 		}
 	}
+	//WORDS ASD
+	//ASD;;LFKFJHAS;LFJ
 	vector<string> creditlist;
 	for(int l = 0; l < N; l++){
 		//retrieve hashes here, input the different
