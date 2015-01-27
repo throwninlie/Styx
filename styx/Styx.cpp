@@ -13,7 +13,8 @@ class Game{
         void render();
     private:
         sf::RenderWindow mWindow;
-        sf::CircleShape mPlayer;
+        //sf::CircleShape mPlayer;
+        sf::Sprite mPlayer;
         bool mIsMovingUp = false;
         bool mIsMovingDown = false;
         bool mIsMovingRight = false;
@@ -22,9 +23,17 @@ class Game{
 };
 Game::Game():mWindow(sf::VideoMode(640,480),"Styx"),mPlayer(){
     //initializes window with cyan circle
-    mPlayer.setRadius(40.f);
-    mPlayer.setPosition(100.f,100.f);
-    mPlayer.setFillColor(sf::Color::Cyan);
+    //mPlayer.setRadius(40.f);
+    //mPlayer.setPosition(100.f,100.f);
+    //mPlayer.setFillColor(sf::Color::Cyan);
+
+    sf::Texture texture;
+    if (!texture.loadFromFile("floating_eyebeast.png"))
+    {
+    // Handle loading error
+    }
+    sf::Sprite mPlayer(texture);
+    mPlayer.setPosition(100.f, 100.f);
 }
 
 void Game::run(){
@@ -90,6 +99,8 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed){
     }
 }
 void Game::render(){
+
+
     //renders game to the screen
     //clears window first
     mWindow.clear();
