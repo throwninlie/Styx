@@ -29,10 +29,16 @@ Game::Game():mWindow(sf::VideoMode(640,480),"Styx"),mPlayer(){
 
 void Game::run(){
     sf::Clock clock;
+    sf::Time timeSinceLastUpdate = sf::Time::Zero;
+    sf::Time TimePerFrame = sf::seconds(1.f/60.f);
     while(mWindow.isOpen()){
-        sf::Time deltaTime = clock.restart();
         processEvents();
-        update(deltaTime);
+        timeSinceLastUpdate += clock.restart();
+        while(timeSinceLastUpdate > TimePerFrame){
+            timeSinceLastUpdate -= TimePerFrame;
+            processEvents();
+            update(TimePerFrame);
+        }
         render();
     }
 }
