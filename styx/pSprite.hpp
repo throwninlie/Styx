@@ -9,8 +9,8 @@ class pSprite{
         void sprite_init(std::string s,float x, float y){
         tex.loadFromFile(s);
         sprite.setTexture(tex);
-        sprite.setTextureRect(sf::IntRect(10, 10, 100, 100));
-        sprite.setColor(sf::Color(255, 255, 255, 200));
+        //sprite.setTextureRect(sf::IntRect(10, 10, 100, 100));
+        //sprite.setColor(sf::Color(255, 255, 255, 200));
         sprite.setPosition(x, y);
         }
 };

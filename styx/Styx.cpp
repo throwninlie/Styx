@@ -1,5 +1,6 @@
 
 #include "SFML/Graphics.hpp"
+#include "pSprite.hpp"
 
 class Game{
     public:
@@ -23,17 +24,14 @@ class Game{
 
 };
 Game::Game():mWindow(sf::VideoMode(640,480),"Styx"),mPlayer(),mTexture(){
-    //initializes window with cyan circle
-    //mPlayer.setRadius(40.f);
-    //mPlayer.setPosition(100.f,100.f);
-    //mPlayer.setFillColor(sf::Color::Cyan);
-
 
     if (!mTexture.loadFromFile("..\\Assets\\floating_eyebeast.png"))
     {
     // Handle loading error
     }
+    mTexture.setSmooth(true);
     mPlayer.setTexture(mTexture);
+
     mPlayer.setPosition(100.f, 100.f);
 }
 
