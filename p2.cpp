@@ -85,10 +85,29 @@ int main(){
 		//cout << credit << endl;
 		//string creditString;
 		//creditString = to_string(credit);
+		
+
+//other stuff
+
+
+
+
+
+
+
+
+
 		for(sdfioasudf){
 
 
 
+
+
+
+
+
+
+//spaces
 
 			sdfasgwiepowier
 
