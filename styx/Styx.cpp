@@ -15,24 +15,25 @@ class Game{
         sf::RenderWindow mWindow;
         //sf::CircleShape mPlayer;
         sf::Sprite mPlayer;
+        sf::Texture mTexture;
         bool mIsMovingUp = false;
         bool mIsMovingDown = false;
         bool mIsMovingRight = false;
         bool mIsMovingLeft = false;
 
 };
-Game::Game():mWindow(sf::VideoMode(640,480),"Styx"),mPlayer(){
+Game::Game():mWindow(sf::VideoMode(640,480),"Styx"),mPlayer(),mTexture(){
     //initializes window with cyan circle
     //mPlayer.setRadius(40.f);
     //mPlayer.setPosition(100.f,100.f);
     //mPlayer.setFillColor(sf::Color::Cyan);
 
-    sf::Texture texture;
-    if (!texture.loadFromFile("floating_eyebeast.png"))
+
+    if (!mTexture.loadFromFile("..\\Assets\\floating_eyebeast.png"))
     {
     // Handle loading error
     }
-    sf::Sprite mPlayer(texture);
+    mPlayer.setTexture(mTexture);
     mPlayer.setPosition(100.f, 100.f);
 }
 
