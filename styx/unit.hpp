@@ -176,11 +176,11 @@ class unit : public pSprite{
                 vel.y = -0.7 * vel.y;
                 collision();
             }
-            else if(pos.y < yMin){
-                pos.y = yMin;
-                vel.y = -0.2 * vel.y;
-                collision();
-            }
+            //else if(pos.y < yMin){
+            //    pos.y = yMin;
+            //    vel.y = -0.2 * vel.y;
+            //    collision();
+            //}
             //Jump if appropriate
             if(wantJump == true && collided == true){
                 jumpMagnitude.x = 600 * sin(2*M_PI*orientation/360);
@@ -195,6 +195,51 @@ class unit : public pSprite{
             sprite.setPosition(pos.x,pos.y);
             setLocalAccX(0.0);
             setLocalAccY(0.0);
+        }
+};
+
+class obstacle : public pSprite{
+    private:
+        sf::Vector2f pos, vel;
+        float rotRate, pBegin, pEnd;
+        bool xy; //True for x path, false for y path
+    public:
+        void obstacle_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, float rotationRate,float pathEnd, bool xy){
+           sprite_init(s,pos);
+           pos = initialPosition;
+           vel = initialVelocity;
+           rotRate = rotationRate;
+           if(xy){
+           pBegin = pos.x;
+           }
+           else{
+           pBegin = pos.y;
+           }
+           pEnd = pathEnd;
+        }
+        sf::Vector2f getPosition(){
+            return pos;
+        }
+        sf::Vector2f getVelocity(){
+            return vel;
+        }
+        float getRotRate(){
+            return rotRate;
+        }
+        void setPosition(sf::Vector2f newPosition){
+            pos = newPosition;
+        }
+        void setVelocity(sf::Vector2f newVelocity){
+            vel = newVelocity;
+        }
+        void setRotRate(float newRotRate){
+            rotRate = newRotRate;
+        }
+        void deltaP(sf::Vector2f deltaPosition){
+            pos += deltaPosition;
+        }
+        void update(sf::Time deltaTime){
+            deltaP(vel * deltaTime.asSeconds());
         }
 };
 
