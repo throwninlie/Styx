@@ -19,7 +19,7 @@ class Game{
         //Global Clock
         sf::Clock* globalClock;
         //Global collider registry
-        std::map<int,sf::obstacle*>* colliderMap;
+        std::map<int,obstacle*>* colliderMap;
         //world view
         sf::View mWorldView;
         //scroll speed of view
@@ -42,7 +42,7 @@ int windowX = 640;
 int windowY = 480;
 Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(),globalClock(),mWorldView(){
     //in the game class
-    colliderMap = new std::map<int,sf::obstacle*>;
+    colliderMap = new std::map<int,obstacle*>;
     globalClock = new sf::Clock;
     mWorldView.reset(sf::FloatRect(0, 0, windowX, windowY));
     //Global positions, velocities, and accelerations
@@ -78,7 +78,8 @@ void Game::run(){
     }
 }
 
-
+bool intersects = false;
+sf::FloatRect boolRect;
 void Game::update(sf::Time deltaTime, sf::Time now){
     //updates game logic
 
@@ -104,11 +105,23 @@ void Game::update(sf::Time deltaTime, sf::Time now){
         pSprite* mSpawn;
         mSpawn = new pSprite;
         sf::Vector2f randVec(rand() %windowX,rand() %windowY);
-        mSpawn->sprite_init("..\\Assets\\floating_eyebeast.png",randVec);
+        mSpawn->sprite_init("..\\Assets\\floating_eyebeast.png",randVec,false);
         mSpawn->sprite.scale(0.2,0.2);
         spawns.push_back(mSpawn);
         spawnNum +=1;
         mSpawnSprite = false;
+    }
+    //Check player for collisions with obstacles/monsters
+            intersects = false;
+    if(colliderMap->size() != 0){
+            for(int i = 0; i < colliderMap->size(); i++){
+                //Use SFML rectangle intersection library for rectangle collision detection
+                intersects = uPlayer->sprite.getGlobalBounds().intersects(colliderMap->at(i)->sprite.getGlobalBounds(),boolRect);
+                if(intersects){
+                    uPlayer->collision(); //Reset collision timer
+                    break;
+                }
+            }
     }
     //New player update sequence
     uPlayer->update(deltaTime);
