@@ -72,16 +72,6 @@ void Game::run(){
         while(timeSinceLastUpdate > TimePerFrame){
             timeSinceLastUpdate -= TimePerFrame;
             processEvents();
-            if(mSpawnSprite){
-                pSprite* mSpawn;
-                mSpawn = new pSprite;
-                sf::Vector2f randVec(rand() %500,rand() %500);
-                mSpawn->sprite_init("..\\Assets\\floating_eyebeast.png",randVec);
-                mSpawn->sprite.scale(0.2,0.2);
-                spawns.push_back(mSpawn);
-                spawnNum +=1;
-                mSpawnSprite = false;
-            }
             update(TimePerFrame,now);
         }
         render();
@@ -108,6 +98,17 @@ void Game::update(sf::Time deltaTime, sf::Time now){
     sf::Time scrollStart = sf::seconds(5.0f);
     if(now.asSeconds() > scrollStart.asSeconds()){
         mWorldView.move(0.f, (now.asSeconds() - scrollStart.asSeconds()) * mScrollSpeed * deltaTime.asSeconds());
+    }
+
+    if(mSpawnSprite){
+        pSprite* mSpawn;
+        mSpawn = new pSprite;
+        sf::Vector2f randVec(rand() %windowX,rand() %windowY);
+        mSpawn->sprite_init("..\\Assets\\floating_eyebeast.png",randVec);
+        mSpawn->sprite.scale(0.2,0.2);
+        spawns.push_back(mSpawn);
+        spawnNum +=1;
+        mSpawnSprite = false;
     }
     //New player update sequence
     uPlayer->update(deltaTime);
