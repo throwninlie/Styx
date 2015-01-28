@@ -1,6 +1,7 @@
 
 #include "SFML/Graphics.hpp"
 #include "pSprite.hpp"
+#include "unit.hpp"
 #include <vector>
 class Game{
     public:
@@ -17,7 +18,8 @@ class Game{
         //sf::CircleShape mPlayer;
         //sf::Sprite mPlayer;
         //sf::Texture mTexture;
-        pSprite* mPlayer;
+        //pSprite* mPlayer;
+        unit* uPlayer;
         std::vector<pSprite*> spawns;
         int spawnNum =0;
         bool mIsMovingUp = false;
@@ -27,10 +29,15 @@ class Game{
         bool mSpawnSprite = false;
 
 };
-Game::Game():mWindow(sf::VideoMode(640,480),"Styx"),mPlayer(){
-    mPlayer = new pSprite;
-    mPlayer->sprite_init("..\\Assets\\hexagonTiles\\Tiles\\alienYellow.png",100.f,100.f);
-    mPlayer->sprite.scale(1.5,1.5);
+Game::Game():mWindow(sf::VideoMode(640,480),"Styx"),uPlayer(){
+    //mPlayer = new pSprite;
+    //mPlayer->sprite_init("..\\Assets\\hexagonTiles\\Tiles\\alienYellow.png",100.f,100.f);
+    //mPlayer->sprite.scale(1.5,1.5);
+    sf::Vector2f defaultPos(0.f, 0.f);
+    sf::Vector2f defaultVel(0.f, 0.f);
+    uPlayer = new unit;
+    uPlayer->unit_init("..\\Assets\\hexagonTiles\\Tiles\\alienYellow.png",defaultPos,defaultVel);
+    uPlayer->sprite.scale(1.5,1.5);
 }
 
 void Game::run(){
@@ -79,7 +86,8 @@ void Game::update(sf::Time deltaTime){
     }if(mIsMovingRight){
         movement.x += playerSpeed;
     }
-    mPlayer->sprite.move(movement*deltaTime.asSeconds());
+    //mPlayer->sprite.move(movement*deltaTime.asSeconds());
+    uPlayer->sprite.move(movement*deltaTime.asSeconds());
 }
 
 void Game::processEvents(){
@@ -120,7 +128,8 @@ void Game::render(){
     //clears window first
     mWindow.clear();
     //draw all the objects of the current frame by calling draw method
-    mWindow.draw(mPlayer->sprite);
+    //mWindow.draw(mPlayer->sprite);
+    mWindow.draw(uPlayer->sprite);
     //draw spawns
     for(int i = 0; i < spawnNum; i++){
         mWindow.draw(spawns.at(i)->sprite);

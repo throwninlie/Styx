@@ -12,7 +12,8 @@ class unit : public pSprite{
             sprite_init(s,initialPosition.x,initialPosition.y);
             pos = initialPosition;
             vel = initialVelocity;
-            acc = (0.0f,0.0f);
+            acc.x = 0.0f;
+            acc.y = 0.0f;
         }
         void setAcceleration(sf::Vector2f enforcedAccel){
             acc = enforcedAccel;
@@ -30,8 +31,8 @@ class unit : public pSprite{
             pos += deltaPosition;
         }
         void update(sf::Time deltaTime, sf::Vector2f environmentAccel){
-            deltaV(deltaTime * (acc+environmentAccel));
-            deltaP(deltaTime * vel);
+            deltaV(deltaTime.asSeconds() * (acc+environmentAccel));
+            deltaP(deltaTime.asSeconds() * vel);
             sprite.setPosition(pos.x,pos.y);
         }
 };
