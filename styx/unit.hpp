@@ -15,6 +15,7 @@ class pSprite{
             //tex.setSmooth(true);
             //sprite.setTextureRect(sf::IntRect(10, 10, 100, 100));
             //sprite.setColor(sf::Color(255, 255, 255, 200));
+            sprite.setOrigin(tex.getSize().x/2.0,tex.getSize().y/2.0);
             sprite.setPosition(pos.x, pos.y);
         }
 };
@@ -24,7 +25,7 @@ class unit : public pSprite{
         sf::Vector2f pos, vel, velMax, pAcc, maxAcc, localAcc, lastAcc, jumpMagnitude;
         sf::Clock* globalClock;
         bool pAccel_toggle_on, left, right, up, down;
-        int xMax, yMax;
+        int xMax, yMax, xMin, yMin;
         float lastJump, jumpCooldown, now, orientation;
     public:
         void unit_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, sf::Vector2f passiveAccel, int gameWindowX, int gameWindowY,sf::Clock* clock){
@@ -32,8 +33,10 @@ class unit : public pSprite{
             vel = initialVelocity;
             sprite_init(s,pos);
             pAcc = passiveAccel;
-            xMax = gameWindowX - 1.2*tex.getSize().x;
-            yMax = gameWindowY - 1.2*tex.getSize().y;
+            xMin = -0.6*tex.getSize().x;
+            yMin = -0.6*tex.getSize().y;
+            xMax = gameWindowX + xMin;
+            yMax = gameWindowY + yMin;
             velMax.x = 200;
             velMax.y = 200;
             maxAcc.x = 200;
@@ -103,9 +106,11 @@ class unit : public pSprite{
         void rot(char dir){
             switch(dir){
                 case 'L':
-                    orientation += 10;
+                    orientation -= 10.0;
+                    break;
                 case 'R':
-                    orientation -= 10;
+                    orientation += 10.0;
+                    break;
             }
         }
         void update(sf::Time deltaTime){
@@ -138,24 +143,24 @@ class unit : public pSprite{
                 pos.x = xMax;
                 vel.x = -0.7 * vel.x;
             }
-            else if(pos.x < 0){
-                pos.x = 0;
+            else if(pos.x < xMin){
+                pos.x = xMin;
                 vel.x = -0.7 * vel.x;
             }
             if(pos.y > yMax){
                 pos.y = yMax;
                 vel.y = -0.7 * vel.y;
             }
-            else if(pos.y < 0){
-                pos.y = 0;
+            else if(pos.y < yMin){
+                pos.y = yMin;
                 vel.y = -0.2 * vel.y;
             }
             //Update time
             now = globalClock->getElapsedTime().asSeconds();
             //Jump if appropriate
             if(now - lastJump > jumpCooldown && lastAcc.y == 0 && localAcc.y < 0){
-                //jumpMagnitude.x = 400 * sin(2*M_PI*orientation/360);
-                //jumpMagnitude.y = 400 * cos(2*M_PI*orientation/360);
+                jumpMagnitude.x = 400 * sin(2*M_PI*orientation/360);
+                jumpMagnitude.y = 400 * -cos(2*M_PI*orientation/360);
                 deltaV(jumpMagnitude);
                 lastJump = now;
             }

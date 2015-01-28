@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include "SFML/Graphics.hpp"
 #include "unit.hpp"
@@ -22,6 +23,8 @@ class Game{
         bool mIsMovingRight = false;
         bool mIsMovingLeft = false;
         bool mSpawnSprite = false;
+        bool mRotateLeft = false;
+        bool mRotateRight = false;
 
 };
 int windowX = 640;
@@ -89,6 +92,8 @@ void Game::update(sf::Time deltaTime){
     }if(mIsMovingRight){
         //movement.x += playerSpeed;
         uPlayer->accelRight();
+    }if(mRotateLeft){uPlayer->rot('L');
+    }if(mRotateRight){uPlayer->rot('R');
     }
     //uPlayer->sprite.move(movement*deltaTime.asSeconds());
     //New player update sequence
@@ -124,9 +129,9 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed){
         mIsMovingRight = isPressed;
     }else if(key == sf::Keyboard::E){
         //mSpawnSprite = isPressed;
-        uPlayer->rot('L');
+        mRotateRight = isPressed;
     }else if(key == sf::Keyboard::Q){
-        uPlayer->rot('R');
+        mRotateLeft = isPressed;
     }
 }
 void Game::render(){
