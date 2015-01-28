@@ -32,6 +32,7 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="Styx.cpp" />
+		<Unit filename="pSprite.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

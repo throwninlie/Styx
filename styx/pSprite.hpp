@@ -5,13 +5,17 @@ class pSprite{
     public:
         sf::Texture tex;
         sf::Sprite sprite;
-    private:
+    public:
         void sprite_init(std::string s,float x, float y){
-        tex.loadFromFile(s);
-        sprite.setTexture(tex);
-        //sprite.setTextureRect(sf::IntRect(10, 10, 100, 100));
-        //sprite.setColor(sf::Color(255, 255, 255, 200));
-        sprite.setPosition(x, y);
+            if (!tex.loadFromFile(s))
+            {
+                // Handle loading error
+            };
+            sprite.setTexture(tex);
+            //tex.setSmooth(true);
+            //sprite.setTextureRect(sf::IntRect(10, 10, 100, 100));
+            //sprite.setColor(sf::Color(255, 255, 255, 200));
+            sprite.setPosition(x, y);
         }
 };
 
