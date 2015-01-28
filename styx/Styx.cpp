@@ -1,4 +1,4 @@
-
+#include <math.h>
 #include "SFML/Graphics.hpp"
 #include "unit.hpp"
 #include <vector>
@@ -27,15 +27,20 @@ class Game{
 int windowX = 640;
 int windowY = 480;
 Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(){
+    //Global Clock
+    sf::Clock* globalClock;
+    globalClock = new sf::Clock;
+    //Global positions, velocities, and accelerations
     sf::Vector2f defaultPos(0.f, 0.f);
     sf::Vector2f defaultVel(0.f, 0.f);
     sf::Vector2f passiveAccel(0.f,100.f);
     uPlayer = new unit;
-    uPlayer->unit_init("..\\Assets\\hexagonTiles\\Tiles\\alienYellow.png",defaultPos,defaultVel,passiveAccel,windowX,windowY);
+    uPlayer->unit_init("..\\Assets\\hexagonTiles\\Tiles\\alienYellow.png",defaultPos,defaultVel,passiveAccel,windowX,windowY,globalClock);
     uPlayer->sprite.scale(1.5,1.5);
 }
 
 void Game::run(){
+    //Spawning clock
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
     sf::Time TimePerFrame = sf::seconds(1.f/60.f);
@@ -74,16 +79,16 @@ void Game::update(sf::Time deltaTime){
     sf::Vector2f movement(0.f,0.f);
     if(mIsMovingUp){
         //movement.y -= playerSpeed;
-        uPlayer->setLocalAccY(-playerAccel.y);
+        uPlayer->accelUp();
     }if(mIsMovingDown){
         //movement.y += playerSpeed;
-        uPlayer->setLocalAccY(playerAccel.y);
+        uPlayer->accelDown();
     }if(mIsMovingLeft){
         //movement.x -= playerSpeed;
-        uPlayer->setLocalAccX(-playerAccel.x);
+        uPlayer->accelLeft();
     }if(mIsMovingRight){
         //movement.x += playerSpeed;
-        uPlayer->setLocalAccX(playerAccel.x);
+        uPlayer->accelRight();
     }
     //uPlayer->sprite.move(movement*deltaTime.asSeconds());
     //New player update sequence
@@ -117,8 +122,11 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed){
         mIsMovingLeft = isPressed;
     }else if(key == sf::Keyboard::D){
         mIsMovingRight = isPressed;
+    }else if(key == sf::Keyboard::E){
+        //mSpawnSprite = isPressed;
+        uPlayer->rot('L');
     }else if(key == sf::Keyboard::Q){
-        mSpawnSprite = isPressed;
+        uPlayer->rot('R');
     }
 }
 void Game::render(){
