@@ -11,13 +11,21 @@ class Game{
     private:
         void processEvents();
         void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
-        void update(sf::Time deltaTime);
+        void update(sf::Time deltaTime, sf::Time now);
         void render();
     private:
         sf::RenderWindow mWindow;
         unit* uPlayer;
+        //Global Clock
+        sf::Clock* globalClock;
+        //world view
+        sf::View mWorldView;
+        //scroll speed of view
+        int mScrollSpeed = -1.0;
+
         std::vector<pSprite*> spawns;
         int spawnNum =0;
+
         bool mIsMovingUp = false;
         bool mIsMovingDown = false;
         bool mIsMovingRight = false;
@@ -30,10 +38,10 @@ class Game{
 };
 int windowX = 640;
 int windowY = 480;
-Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(){
-    //Global Clock
-    sf::Clock* globalClock;
+Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(),globalClock(),mWorldView(){
+    //in the game class
     globalClock = new sf::Clock;
+    mWorldView.reset(sf::FloatRect(0, 0, windowX, windowY));
     //Global positions, velocities, and accelerations
     sf::Vector2f defaultPos(windowX*0.5, windowY);
     sf::Vector2f defaultVel(0.f, 0.f);
@@ -52,9 +60,12 @@ void Game::run(){
     //spawn sprite stuff
     sf::Time timeSinceLastSpawn = sf::Time::Zero;
     sf::Time timePerSpawn = sf::seconds(1.0f);
+
+
     while(mWindow.isOpen()){
         processEvents();
         timeSinceLastUpdate += clock.restart();
+        sf::Time now = globalClock->getElapsedTime();
         while(timeSinceLastUpdate > TimePerFrame){
             timeSinceLastUpdate -= TimePerFrame;
             processEvents();
@@ -68,17 +79,16 @@ void Game::run(){
                 spawnNum +=1;
                 mSpawnSprite = false;
             }
-            update(TimePerFrame);
+            update(TimePerFrame,now);
         }
         render();
     }
 }
 
 
-void Game::update(sf::Time deltaTime){
+void Game::update(sf::Time deltaTime, sf::Time now){
     //updates game logic
-    sf::Vector2f playerAccel(200.f,200.f);
-    sf::Vector2f movement(0.f,0.f);
+
     if(mIsMovingUp){
         uPlayer->accelUp();
     }if(mIsMovingDown){
@@ -90,6 +100,11 @@ void Game::update(sf::Time deltaTime){
     }if(mRotateLeft){uPlayer->rot('L');
     }if(mRotateRight){uPlayer->rot('R');
     }if(mWantJump){uPlayer->jump();
+    }
+    //you can start scrolling the game
+    sf::Time scrollStart = sf::seconds(5.0f);
+    if(now.asSeconds() > scrollStart.asSeconds()){
+        mWorldView.move(0.f, (now.asSeconds() - scrollStart.asSeconds()) * mScrollSpeed * deltaTime.asSeconds());
     }
     //New player update sequence
     uPlayer->update(deltaTime);
@@ -138,6 +153,7 @@ void Game::render(){
     //renders game to the screen
     //clears window first
     mWindow.clear();
+    mWindow.setView(mWorldView);
     //draw all the objects of the current frame by calling draw method
     mWindow.draw(uPlayer->sprite);
     //draw spawns
