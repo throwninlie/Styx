@@ -20,7 +20,7 @@ class pSprite{
         }
 };
 
-class unit : public pSprite{
+class player : public pSprite{
     private:
         sf::Vector2f pos, vel, velMax, pAcc, maxAcc, localAcc, lastAcc, jumpMagnitude;
         sf::Clock* globalClock;
@@ -28,7 +28,7 @@ class unit : public pSprite{
         int xMax, yMax, xMin, yMin;
         float lastJump, jumpCooldown, now, orientation, lastCollision, jumpWindow;
     public:
-        void unit_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, sf::Vector2f passiveAccel, int gameWindowX, int gameWindowY,sf::Clock* clock){
+        void player_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, sf::Vector2f passiveAccel, int gameWindowX, int gameWindowY,sf::Clock* clock){
             pos = initialPosition;   //Set initial conditions
             vel = initialVelocity;
             sprite_init(s,pos);     //Initialize sprite object
@@ -138,14 +138,14 @@ class unit : public pSprite{
             now = globalClock->getElapsedTime().asSeconds();
             //Apply rotation
             sprite.setRotation(orientation);
-            //Apply changes to unit's velocity
+            //Apply changes to player's velocity
             if(pAccel_toggle_on){
                 deltaV(deltaTime.asSeconds() * (pAcc+localAcc));
             }
             else{
                 deltaV(deltaTime.asSeconds() * (localAcc));
             }
-            //Limit velocity to unit's maximum velocity
+            //Limit velocity to player's maximum velocity
             if(vel.x > velMax.x){
                 vel.x = velMax.x;
             }
@@ -158,7 +158,7 @@ class unit : public pSprite{
             else if(vel.y < -velMax.y){
                vel.y = -velMax.y;
             }
-            //Apply changes to unit's position (does not move sprite)
+            //Apply changes to player's position (does not move sprite)
             deltaP(deltaTime.asSeconds() * vel);
             //Check for boundary collisions
             if(pos.x > xMax){

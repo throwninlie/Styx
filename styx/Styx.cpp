@@ -1,7 +1,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include "SFML/Graphics.hpp"
-#include "unit.hpp"
+#include "player.hpp"
 #include <vector>
 class Game{
     public:
@@ -15,7 +15,7 @@ class Game{
         void render();
     private:
         sf::RenderWindow mWindow;
-        unit* uPlayer;
+        player* uPlayer;
         //Global Clock
         sf::Clock* globalClock;
         //Global collider registry
@@ -49,8 +49,8 @@ Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(),globalCloc
     sf::Vector2f defaultPos(windowX*0.5, windowY);
     sf::Vector2f defaultVel(0.f, 0.f);
     sf::Vector2f passiveAccel(0.f,100.f);
-    uPlayer = new unit;
-    uPlayer->unit_init("..\\Assets\\hexagonTiles\\Tiles\\alienYellow.png",defaultPos,defaultVel,passiveAccel,windowX,windowY,globalClock);
+    uPlayer = new player;
+    uPlayer->player_init("..\\Assets\\hexagonTiles\\Tiles\\alienYellow.png",defaultPos,defaultVel,passiveAccel,windowX,windowY,globalClock);
     uPlayer->sprite.scale(1.5,1.5);
 }
 
