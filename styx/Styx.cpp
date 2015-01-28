@@ -15,10 +15,6 @@ class Game{
         void render();
     private:
         sf::RenderWindow mWindow;
-        //sf::CircleShape mPlayer;
-        //sf::Sprite mPlayer;
-        //sf::Texture mTexture;
-        //pSprite* mPlayer;
         unit* uPlayer;
         std::vector<pSprite*> spawns;
         int spawnNum =0;
@@ -29,14 +25,14 @@ class Game{
         bool mSpawnSprite = false;
 
 };
-Game::Game():mWindow(sf::VideoMode(640,480),"Styx"),uPlayer(){
-    //mPlayer = new pSprite;
-    //mPlayer->sprite_init("..\\Assets\\hexagonTiles\\Tiles\\alienYellow.png",100.f,100.f);
-    //mPlayer->sprite.scale(1.5,1.5);
+int windowX = 640;
+int windowY = 480;
+Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(){
     sf::Vector2f defaultPos(0.f, 0.f);
     sf::Vector2f defaultVel(0.f, 0.f);
+    sf::Vector2f passiveAccel(0.f,100.f);
     uPlayer = new unit;
-    uPlayer->unit_init("..\\Assets\\hexagonTiles\\Tiles\\alienYellow.png",defaultPos,defaultVel);
+    uPlayer->unit_init("..\\Assets\\hexagonTiles\\Tiles\\alienYellow.png",defaultPos,defaultVel,passiveAccel,windowX,windowY);
     uPlayer->sprite.scale(1.5,1.5);
 }
 
@@ -57,9 +53,8 @@ void Game::run(){
             if(mSpawnSprite){
                 pSprite* mSpawn;
                 mSpawn = new pSprite;
-                int xRand = rand() %500;
-                int yRand = rand() %500;
-                mSpawn->sprite_init("..\\Assets\\floating_eyebeast.png",xRand,yRand);
+                sf::Vector2f randVec(rand() %500,rand() %500);
+                mSpawn->sprite_init("..\\Assets\\floating_eyebeast.png",randVec);
                 mSpawn->sprite.scale(0.2,0.2);
                 spawns.push_back(mSpawn);
                 spawnNum +=1;
@@ -75,19 +70,25 @@ void Game::run(){
 
 void Game::update(sf::Time deltaTime){
     //updates game logic
-    float playerSpeed = 100.f;
+    //float playerSpeed = 100.f;
+    sf::Vector2f playerAccel(200.f,200.f);
     sf::Vector2f movement(0.f,0.f);
     if(mIsMovingUp){
-        movement.y -= playerSpeed;
+        //movement.y -= playerSpeed;
+        uPlayer->setLocalAccY(-playerAccel.y);
     }if(mIsMovingDown){
-        movement.y += playerSpeed;
+        //movement.y += playerSpeed;
+        uPlayer->setLocalAccY(playerAccel.y);
     }if(mIsMovingLeft){
-        movement.x -= playerSpeed;
+        //movement.x -= playerSpeed;
+        uPlayer->setLocalAccX(-playerAccel.x);
     }if(mIsMovingRight){
-        movement.x += playerSpeed;
+        //movement.x += playerSpeed;
+        uPlayer->setLocalAccX(playerAccel.x);
     }
-    //mPlayer->sprite.move(movement*deltaTime.asSeconds());
-    uPlayer->sprite.move(movement*deltaTime.asSeconds());
+    //uPlayer->sprite.move(movement*deltaTime.asSeconds());
+    //New player update sequence
+    uPlayer->update(deltaTime);
 }
 
 void Game::processEvents(){
@@ -128,7 +129,6 @@ void Game::render(){
     //clears window first
     mWindow.clear();
     //draw all the objects of the current frame by calling draw method
-    //mWindow.draw(mPlayer->sprite);
     mWindow.draw(uPlayer->sprite);
     //draw spawns
     for(int i = 0; i < spawnNum; i++){
