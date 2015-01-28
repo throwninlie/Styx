@@ -29,28 +29,28 @@ class unit : public pSprite{
         float lastJump, jumpCooldown, now, orientation, lastCollision, jumpWindow;
     public:
         void unit_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, sf::Vector2f passiveAccel, int gameWindowX, int gameWindowY,sf::Clock* clock){
-            pos = initialPosition;
+            pos = initialPosition;   //Set initial conditions
             vel = initialVelocity;
-            sprite_init(s,pos);
-            pAcc = passiveAccel;
-            xMin = 0.5 * tex.getSize().x;
+            sprite_init(s,pos);     //Initialize sprite object
+            pAcc = passiveAccel;    //Set gravity
+            xMin = 0.5 * tex.getSize().x; //Solve for window boundary locations based on texture size
             yMin = 0.5 * tex.getSize().y;
             xMax = gameWindowX - xMin;
             yMax = gameWindowY - yMin;
-            velMax.x = 200;
+            velMax.x = 200;    //Set maximum allowable velocities and accelerations
             velMax.y = 200;
             maxAcc.x = 200;
             maxAcc.y = passiveAccel.y;
             pAccel_toggle_on = true; //Gravity "on" by default
-            globalClock = clock;
-            lastJump = globalClock->getElapsedTime().asSeconds();
-            jumpCooldown = 1.0;
+            globalClock = clock;    //Store pointer to game clock
+            lastJump = globalClock->getElapsedTime().asSeconds();   //Set first jump timer
+            jumpCooldown = 1.0;         //Set variables relevant to jump and rotate functionality
             jumpMagnitude.x = 0.f;
             jumpMagnitude.y = 400.f;
             orientation = 0.0;
-            jumpWindow = 0.1;
+            jumpWindow = 0.1; //Window of time after collision during which jumping is allowed
         }
-        void addLocalAccX(float accX){
+        void addLocalAccX(float accX){ //Functions to read and change various properties
             localAcc.x += accX;
         }
         void addLocalAccY(float accY){
@@ -120,15 +120,15 @@ class unit : public pSprite{
                     break;
             }
         }
-        void collision(){
+        void collision(){       //Collision event handling
             collided = true;
             lastCollision = globalClock->getElapsedTime().asSeconds();
         }
-        void jumped(){
+        void jumped(){          //Jump event handling
             collided = false;
             wantJump = false;
         }
-        void jump(){
+        void jump(){            //Limit jumping ability to time shortly after collision
             if(now - lastCollision < jumpWindow){
                 wantJump = true;
             }
@@ -201,19 +201,21 @@ class unit : public pSprite{
 class obstacle : public pSprite{
     private:
         sf::Vector2f pos, vel;
-        float rotRate, pBegin, pEnd;
-        bool xy; //True for x path, false for y path
+        float rotRate, pBegin, pEnd, orientation;
+        bool xTraveler;
     public:
-        void obstacle_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, float rotationRate,float pathEnd, bool xy){
-           sprite_init(s,pos);
+        void obstacle_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, float rotationRate,float pathEnd){
+           sprite_init(s,pos);      //Initialize sprite object and set initial conditions
            pos = initialPosition;
            vel = initialVelocity;
            rotRate = rotationRate;
-           if(xy){
+           if(vel.x != 0.0){        //If initialized with x-velocity, this is an x-traveling obstacle; false => y-traveling
            pBegin = pos.x;
+           xTraveler = true;
            }
            else{
            pBegin = pos.y;
+           xTraveler = false;
            }
            pEnd = pathEnd;
         }
@@ -239,7 +241,39 @@ class obstacle : public pSprite{
             pos += deltaPosition;
         }
         void update(sf::Time deltaTime){
-            deltaP(vel * deltaTime.asSeconds());
+            //Calculate new orientation
+            orientation += 2.0 * M_PI * rotRate * deltaTime.asSeconds()/360.0;
+            //Apply rotation
+            sprite.setRotation(orientation);
+            //Apply change in position
+            deltaP(deltaTime.asSeconds() * vel);
+            //Check for path collision and change velocity accordingly
+            if(xTraveler){
+                if(pos.x < pBegin){
+                    pos.x = pBegin;
+                    vel.x = -vel.x;
+                    vel.y = -vel.y;
+                }
+                if(pos.x > pEnd){
+                    pos.x = pBegin;
+                    vel.x = -vel.x;
+                    vel.y = -vel.y;
+                }
+            }else{
+                if(pos.y < pBegin){
+                    pos.y = pBegin;
+                    vel.x = -vel.x;
+                    vel.y = -vel.y;
+                }
+                if(pos.y > pEnd){
+                    pos.y = pBegin;
+                    vel.x = -vel.x;
+                    vel.y = -vel.y;
+                }
+            }
+            //Update sprite's position and rotation
+            sprite.setPosition(pos.x, pos.y);
+            sprite.setRotation(orientation);
         }
 };
 
