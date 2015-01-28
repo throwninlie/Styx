@@ -1,5 +1,5 @@
-#ifndef PLAYER_HPP_INCLUDED
-#define PLAYER_HPP_INCLUDED
+#ifndef UNIT_HPP_INCLUDED
+#define UNIT_HPP_INCLUDED
 
 class pSprite{
     public:
@@ -284,4 +284,4 @@ class obstacle : public pSprite{
         }
 };
 
-#endif // PLAYER_HPP_INCLUDED
+#endif // UNIT_HPP_INCLUDED
