@@ -6,8 +6,9 @@ class pSprite{
         sf::Texture tex;
         sf::Sprite sprite;
         sf::Sprite* spritePointer;
+        bool monster;
     public:
-        void sprite_init(std::string s,sf::Vector2f pos){
+        void sprite_init(std::string s,sf::Vector2f pos, bool isMonster){
             if (!tex.loadFromFile(s))
             {
                 // Handle loading error
@@ -17,6 +18,7 @@ class pSprite{
             sprite.setOrigin(tex.getSize().x / 2.0,tex.getSize().y / 2.0);
             sprite.setPosition(pos.x, pos.y);
             spritePointer = &sprite;
+            monster = isMonster;
         }
 };
 
@@ -24,14 +26,14 @@ class player : public pSprite{
     private:
         sf::Vector2f pos, vel, velMax, pAcc, maxAcc, localAcc, lastAcc, jumpMagnitude;
         sf::Clock* globalClock;
-        bool pAccel_toggle_on, left, right, up, down, collided, wantJump;
-        int xMax, yMax, xMin, yMin;
+        bool pAccel_toggle_on, left, right, up, down, collided, wantJump, intersects;
+        int xMax, yMax, xMin, yMin, i;
         float lastJump, jumpCooldown, now, orientation, lastCollision, jumpWindow;
     public:
-        void player_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, sf::Vector2f passiveAccel, int gameWindowX, int gameWindowY,sf::Clock* clock){
+        void player_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, sf::Vector2f passiveAccel, int gameWindowX, int gameWindowY,sf::Clock* clock, std::map<int,sf::Sprite*>* colliderMap, player* player){
             pos = initialPosition;   //Set initial conditions
             vel = initialVelocity;
-            sprite_init(s,pos);     //Initialize sprite object
+            sprite_init(s,pos,false);     //Initialize sprite object
             pAcc = passiveAccel;    //Set gravity
             xMin = 0.5 * tex.getSize().x; //Solve for window boundary locations based on texture size
             yMin = 0.5 * tex.getSize().y;
@@ -42,6 +44,7 @@ class player : public pSprite{
             maxAcc.x = 200;
             maxAcc.y = passiveAccel.y;
             pAccel_toggle_on = true; //Gravity "on" by default
+            intersects = false; // not intersecting anything yet
             globalClock = clock;    //Store pointer to game clock
             lastJump = globalClock->getElapsedTime().asSeconds();   //Set first jump timer
             jumpCooldown = 1.0;         //Set variables relevant to jump and rotate functionality
@@ -176,11 +179,15 @@ class player : public pSprite{
                 vel.y = -0.7 * vel.y;
                 collision();
             }
-            //else if(pos.y < yMin){
-            //    pos.y = yMin;
-            //    vel.y = -0.2 * vel.y;
-            //    collision();
-            //}
+            //Check for obstacle collisions
+            i = 0;
+            intersects = false;
+            while(colliderMap->at(i)){
+                sprite.getGlobalBounds().intersects(colliderMap->at(i)->getGlobalBounds(),intersects); //Use SFML library rectangle collision detection
+                if(intersects){
+                    collision(); //Reset collision timer
+                }
+            }
             //Jump if appropriate
             if(wantJump == true && collided == true){
                 jumpMagnitude.x = 600 * sin(2*M_PI*orientation/360);
@@ -205,25 +212,26 @@ class obstacle : public pSprite{
         int id;
         bool xTraveler;
     public:
-        void obstacle_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, float rotationRate,float pathEnd,std::map<int,sf::Sprite*>* colliderMap){
-           //Initialize sprite object and set initial conditions
-           sprite_init(s,pos);
-           //Assign identification number and send sprite pointer to global collision registry
+        void obstacle_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, float rotationRate,float pathEnd,std::map<int,obstacle*>* colliderMap, bool isMonster){
+           //Initialize sprite object
+           sprite_init(s,pos,isMonster);
+           //Assign identification number
            id = colliderMap->size() + 1;
-           colliderMap->at(id) = spritePointer;
+           //Set initial conditions
            pos = initialPosition;
            vel = initialVelocity;
-           rotRate = rotationRate;
-           //If initialized with x-velocity, this is an x-traveling obstacle; false => y-traveling
-           if(vel.x != 0.0){
-           pBegin = pos.x;
-           xTraveler = true;
+           if(!monster){ //If this obstacle is not a monster, set variables relevant to a platform
+                rotRate = rotationRate;
+                //If initialized with x-velocity, this is an x-traveling obstacle; false => y-traveling
+                if(vel.x != 0.0){
+                pBegin = pos.x;
+                xTraveler = true;
+                }else{
+                pBegin = pos.y;
+                xTraveler = false;
+                }
+                pEnd = pathEnd;
            }
-           else{
-           pBegin = pos.y;
-           xTraveler = false;
-           }
-           pEnd = pathEnd;
         }
         //Functions to read and modify various properties
         sf::Vector2f getPosition(){
@@ -248,6 +256,7 @@ class obstacle : public pSprite{
             pos += deltaPosition;
         }
         void update(sf::Time deltaTime){
+            if(!monster){ //If not monster, move like an obstacle
             //Calculate new orientation
             orientation += 2.0 * M_PI * rotRate * deltaTime.asSeconds()/360.0;
             //Apply rotation
@@ -255,32 +264,35 @@ class obstacle : public pSprite{
             //Apply change in position
             deltaP(deltaTime.asSeconds() * vel);
             //Check for path collision and change velocity accordingly
-            if(xTraveler){
-                if(pos.x < pBegin){
-                    pos.x = pBegin;
-                    vel.x = -vel.x;
-                    vel.y = -vel.y;
+                if(xTraveler){
+                    if(pos.x < pBegin){
+                        pos.x = pBegin;
+                        vel.x = -vel.x;
+                        vel.y = -vel.y;
+                    }
+                    if(pos.x > pEnd){
+                        pos.x = pBegin;
+                        vel.x = -vel.x;
+                        vel.y = -vel.y;
+                    }
+                }else{
+                    if(pos.y < pBegin){
+                        pos.y = pBegin;
+                        vel.x = -vel.x;
+                        vel.y = -vel.y;
+                    }
+                    if(pos.y > pEnd){
+                        pos.y = pBegin;
+                        vel.x = -vel.x;
+                        vel.y = -vel.y;
+                    }
                 }
-                if(pos.x > pEnd){
-                    pos.x = pBegin;
-                    vel.x = -vel.x;
-                    vel.y = -vel.y;
-                }
-            }else{
-                if(pos.y < pBegin){
-                    pos.y = pBegin;
-                    vel.x = -vel.x;
-                    vel.y = -vel.y;
-                }
-                if(pos.y > pEnd){
-                    pos.y = pBegin;
-                    vel.x = -vel.x;
-                    vel.y = -vel.y;
-                }
+                //Update sprite's position and rotation
+                sprite.setPosition(pos.x, pos.y);
+                sprite.setRotation(orientation);
+            }else{ //If monster, move like a monster
+
             }
-            //Update sprite's position and rotation
-            sprite.setPosition(pos.x, pos.y);
-            sprite.setRotation(orientation);
         }
 };
 
