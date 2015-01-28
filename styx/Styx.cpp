@@ -35,7 +35,7 @@ Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(){
     sf::Clock* globalClock;
     globalClock = new sf::Clock;
     //Global positions, velocities, and accelerations
-    sf::Vector2f defaultPos(100.f, 100.f);
+    sf::Vector2f defaultPos(windowX*0.5, windowY);
     sf::Vector2f defaultVel(0.f, 0.f);
     sf::Vector2f passiveAccel(0.f,100.f);
     uPlayer = new unit;
