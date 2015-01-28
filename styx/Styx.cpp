@@ -25,6 +25,7 @@ class Game{
         bool mSpawnSprite = false;
         bool mRotateLeft = false;
         bool mRotateRight = false;
+        bool mWantJump = false;
 
 };
 int windowX = 640;
@@ -34,7 +35,7 @@ Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(){
     sf::Clock* globalClock;
     globalClock = new sf::Clock;
     //Global positions, velocities, and accelerations
-    sf::Vector2f defaultPos(0.f, 0.f);
+    sf::Vector2f defaultPos(100.f, 100.f);
     sf::Vector2f defaultVel(0.f, 0.f);
     sf::Vector2f passiveAccel(0.f,100.f);
     uPlayer = new unit;
@@ -69,7 +70,6 @@ void Game::run(){
             }
             update(TimePerFrame);
         }
-
         render();
     }
 }
@@ -77,25 +77,20 @@ void Game::run(){
 
 void Game::update(sf::Time deltaTime){
     //updates game logic
-    //float playerSpeed = 100.f;
     sf::Vector2f playerAccel(200.f,200.f);
     sf::Vector2f movement(0.f,0.f);
     if(mIsMovingUp){
-        //movement.y -= playerSpeed;
         uPlayer->accelUp();
     }if(mIsMovingDown){
-        //movement.y += playerSpeed;
         uPlayer->accelDown();
     }if(mIsMovingLeft){
-        //movement.x -= playerSpeed;
         uPlayer->accelLeft();
     }if(mIsMovingRight){
-        //movement.x += playerSpeed;
         uPlayer->accelRight();
     }if(mRotateLeft){uPlayer->rot('L');
     }if(mRotateRight){uPlayer->rot('R');
+    }if(mWantJump){uPlayer->jump();
     }
-    //uPlayer->sprite.move(movement*deltaTime.asSeconds());
     //New player update sequence
     uPlayer->update(deltaTime);
 }
@@ -128,10 +123,13 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed){
     }else if(key == sf::Keyboard::D){
         mIsMovingRight = isPressed;
     }else if(key == sf::Keyboard::E){
-        //mSpawnSprite = isPressed;
         mRotateRight = isPressed;
     }else if(key == sf::Keyboard::Q){
         mRotateLeft = isPressed;
+    }else if(key == sf::Keyboard::Space){
+        mWantJump = isPressed;
+    }else if(key == sf::Keyboard::Return){
+        mSpawnSprite = isPressed;
     }
 }
 void Game::render(){
