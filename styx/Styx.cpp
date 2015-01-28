@@ -19,7 +19,7 @@ class Game{
         //Global Clock
         sf::Clock* globalClock;
         //Global collider registry
-        std::map<int,sf::Sprite*>* colliderMap;
+        std::map<int,sf::obstacle*>* colliderMap;
         //world view
         sf::View mWorldView;
         //scroll speed of view
@@ -42,7 +42,7 @@ int windowX = 640;
 int windowY = 480;
 Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(),globalClock(),mWorldView(){
     //in the game class
-    colliderMap = new std::map<int,sf::Sprite*>;
+    colliderMap = new std::map<int,sf::obstacle*>;
     globalClock = new sf::Clock;
     mWorldView.reset(sf::FloatRect(0, 0, windowX, windowY));
     //Global positions, velocities, and accelerations
