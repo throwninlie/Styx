@@ -5,6 +5,7 @@ class pSprite{
     public:
         sf::Texture tex;
         sf::Sprite sprite;
+        sf::Sprite* spritePointer;
     public:
         void sprite_init(std::string s,sf::Vector2f pos){
             if (!tex.loadFromFile(s))
@@ -12,11 +13,10 @@ class pSprite{
                 // Handle loading error
             };
             sprite.setTexture(tex);
-            //tex.setSmooth(true);
-            //sprite.setTextureRect(sf::IntRect(10, 10, 100, 100));
-            //sprite.setColor(sf::Color(255, 255, 255, 200));
+            tex.setSmooth(true);
             sprite.setOrigin(tex.getSize().x / 2.0,tex.getSize().y / 2.0);
             sprite.setPosition(pos.x, pos.y);
+            spritePointer = &sprite;
         }
 };
 
@@ -202,14 +202,20 @@ class obstacle : public pSprite{
     private:
         sf::Vector2f pos, vel;
         float rotRate, pBegin, pEnd, orientation;
+        int id;
         bool xTraveler;
     public:
-        void obstacle_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, float rotationRate,float pathEnd){
-           sprite_init(s,pos);      //Initialize sprite object and set initial conditions
+        void obstacle_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, float rotationRate,float pathEnd,std::map<int,sf::Sprite*>* colliderMap){
+           //Initialize sprite object and set initial conditions
+           sprite_init(s,pos);
+           //Assign identification number and send sprite pointer to global collision registry
+           id = colliderMap->size() + 1;
+           colliderMap->at(id) = spritePointer;
            pos = initialPosition;
            vel = initialVelocity;
            rotRate = rotationRate;
-           if(vel.x != 0.0){        //If initialized with x-velocity, this is an x-traveling obstacle; false => y-traveling
+           //If initialized with x-velocity, this is an x-traveling obstacle; false => y-traveling
+           if(vel.x != 0.0){
            pBegin = pos.x;
            xTraveler = true;
            }
@@ -219,6 +225,7 @@ class obstacle : public pSprite{
            }
            pEnd = pathEnd;
         }
+        //Functions to read and modify various properties
         sf::Vector2f getPosition(){
             return pos;
         }
