@@ -1,6 +1,5 @@
 
 #include "SFML/Graphics.hpp"
-#include "pSprite.hpp"
 #include "unit.hpp"
 #include <vector>
 class Game{
