@@ -24,6 +24,7 @@ class pSprite{
 
 class player : public pSprite{
     private:
+        pSprite* miniMe;
         sf::Vector2f pos, vel, velMax, pAcc, maxAcc, localAcc, lastAcc, jumpMagnitude;
         sf::Clock* globalClock;
         bool pAccel_toggle_on, left, right, up, down, collided, wantJump;
@@ -36,6 +37,8 @@ class player : public pSprite{
             pos = initialPosition;   //Set initial conditions
             vel = initialVelocity;
             sprite_init(s,pos,false);     //Initialize sprite object
+            miniMe = new pSprite;
+            miniMe->sprite_init(s,sf::Vector2f(gameWindowX/10.0, gameWindowY/10.0), false);
             pAcc = passiveAccel;    //Set gravity
             xMin = 0.5 * tex.getSize().x; //Solve for window boundary locations based on texture size
             yMin = 0.5 * tex.getSize().y;
@@ -148,6 +151,9 @@ class player : public pSprite{
                 vel.y = -vel.y;
             }
         }
+        float getOrientation(){
+            return orientation;
+        }
         void update(sf::Time deltaTime){
             //Update time
             now = globalClock->getElapsedTime().asSeconds();
@@ -204,6 +210,7 @@ class player : public pSprite{
             lastAcc = localAcc;
             //Change sprite position and reset local acceleration to zero to avoid auto-run
             sprite.setPosition(pos.x,pos.y);
+            miniMe->sprite.setRotation(orientation);
             setLocalAccX(0.0);
             setLocalAccY(0.0);
         }
@@ -275,6 +282,9 @@ class obstacle : public pSprite{
         }
         void setOrientation(float newOrientation){
             orientation = newOrientation;
+        }
+        float getOrientation(){
+            return orientation;
         }
         int getID(){
             return id;
