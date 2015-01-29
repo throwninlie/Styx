@@ -87,6 +87,7 @@ startSequenceFont(),startSequenceText(){
     uPlayer = new player;
     uPlayer->player_init("..\\Assets\\hexagonTiles\\Tiles\\alienYellow.png",defaultPos,defaultVel,passiveAccel,windowX,windowY,globalClock);
     uPlayer->sprite.scale(1.5,1.5);
+    uPlayer->miniMe->sprite.scale(0.8,0.8);
     lastPlayerPos = uPlayer->sprite.getPosition();
 
     //draw horizontal platform to window first thing
@@ -207,7 +208,7 @@ void Game::update(sf::Time deltaTime, sf::Time now){
 
     heightText.setPosition(10,mWorldViewCenter.y-windowY*0.5-10);
     //sets rotation sprite
-    uPlayer->miniMe->sprite.setPosition(10.0, (mWorldViewCenter.y-windowY*0.5)-40);
+    uPlayer->miniMe->sprite.setPosition(60.0, (mWorldViewCenter.y-windowY*0.5)+60.0);
     //uPlayer->miniMe.(uPlayer->getOrientation());
 
 
