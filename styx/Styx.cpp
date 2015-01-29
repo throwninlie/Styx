@@ -16,6 +16,8 @@ class Game{
     private:
         sf::RenderWindow mWindow;
         player* uPlayer;
+
+        //Background* mBackground;
         //Global Clock
         sf::Clock* globalClock;
         //Global collider registry
@@ -25,7 +27,7 @@ class Game{
         //scroll speed of view
         int mScrollSpeed = -1.0;
 
-        std::vector<pSprite*> spawns;
+        std::vector<obstacle*> spawns;
         int spawnNum =0;
 
         bool mIsMovingUp = false;
@@ -41,6 +43,10 @@ class Game{
 int windowX = 640;
 int windowY = 480;
 Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(),globalClock(),mWorldView(){
+
+    //started background stuff
+
+
     //in the game class
     colliderMap = new std::map<int,obstacle*>;
     globalClock = new sf::Clock;
@@ -102,10 +108,20 @@ void Game::update(sf::Time deltaTime, sf::Time now){
     }
 
     if(mSpawnSprite){
-        pSprite* mSpawn;
-        mSpawn = new pSprite;
-        sf::Vector2f randVec(rand() %windowX,rand() %windowY);
-        mSpawn->sprite_init("..\\Assets\\floating_eyebeast.png",randVec,false);
+        obstacle* mSpawn;
+        mSpawn = new obstacle;
+        std::string s = "..\\Assets\\floating_eyebeast.png";
+        sf::Vector2f initialVelocity = sf::Vector2f(400.0,400.0);
+        sf::Vector2f initialPosition = sf::Vector2f(300.0,300.0);
+        float rotationRate,pathEnd;
+        rotationRate = 0.0;
+        pathEnd = 300.0;
+        bool isMonster = true;
+
+        mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd,colliderMap, isMonster, uPlayer);
+        //sf::Vector2f randVec(rand() %windowX,rand() %windowY);
+
+        //mSpawn->sprite_init("..\\Assets\\floating_eyebeast.png",randVec,false);
         mSpawn->sprite.scale(0.2,0.2);
         spawns.push_back(mSpawn);
         spawnNum +=1;
@@ -125,6 +141,15 @@ void Game::update(sf::Time deltaTime, sf::Time now){
     }
     //New player update sequence
     uPlayer->update(deltaTime);
+    int colliderMapSize = colliderMap->size();
+    if (colliderMapSize > 0){
+        for(int i =0; i < colliderMapSize; i++){
+
+            obstacle* obs = colliderMap->at(i);
+            obs->update(deltaTime);
+        }
+    }
+
 }
 
 void Game::processEvents(){
