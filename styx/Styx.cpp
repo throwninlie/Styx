@@ -28,6 +28,7 @@ class Game{
         sf::Vector2f mWorldViewCenter;
         //scroll speed of view
         int mScrollSpeed = -10.0;
+        int score;
         float scrollY = 0;
         //time since last spawn
         sf::Time lastSpawn = sf::seconds(0.0);
@@ -63,6 +64,7 @@ startSequenceFont(),startSequenceText(){
     heightText.setFont(startSequenceFont);
     heightText.setCharacterSize(30);
     heightText.setColor(sf::Color::Green);
+
     //
     startSequenceText.setFont(startSequenceFont);
     startSequenceText.setCharacterSize(100);
@@ -174,20 +176,25 @@ void Game::update(sf::Time deltaTime, sf::Time now){
     sf::Vector2f playerPos;
     playerPos = uPlayer->sprite.getPosition();
 
-    heightText.setPosition(mWorldViewCenter);
+
     sf::String heightTextString;
-    int height;
+
     if(playerPos.y <= 0){
-        height = abs(playerPos.y) + windowY;
+        score = abs(playerPos.y) + windowY;
 
     }else{
-        height = windowY - playerPos.y;
+        score = windowY - playerPos.y;
     }
-    height = height / 250;
-
+    score = score / 100;
+    char buff[100];
+    sprintf(buff, "Score:%d", score);
+    std::string stringy = buff;
     //std::wstring heightChar =std::to_wstring(height);
-    //heightTextString = sf::String(heightChar);
-    heightText.setString("Placeholder \n for Score");
+    heightTextString = sf::String(stringy);
+    heightText.setString(heightTextString);
+
+    heightText.setPosition(10,mWorldViewCenter.y-windowY*0.5-10);
+
 
 
     if(nowSeconds > scrollStart.asSeconds()){
@@ -299,7 +306,7 @@ void Game::update(sf::Time deltaTime, sf::Time now){
             mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
             mSpawn->setOrientation(90.0);
         }else if(mStarSprite){
-            isMonster = false;
+            isMonster = true;
             initialPosition = sf::Vector2f(rand() % (windowX- 400) + 200.0,-100.0);
             initialVelocity = sf::Vector2f(rand() %60,rand() %60 + 10.0);
             s = "..\\Assets\\inkscape crap\\star.png";
@@ -334,6 +341,8 @@ void Game::update(sf::Time deltaTime, sf::Time now){
                     uPlayer->collision(); //Reset collision timer
                     if(colliderMap.at(i)->monster){
                         //React to touching monster
+                        //subtracts from score
+                        score -= 5;
                     }else if(colliderMap.at(i)->getPlatformType() == true){
                         //React to touching horizontal platform
                         uPlayer->bounceY();
@@ -412,11 +421,12 @@ void Game::render(){
     //draw spawns and start text
 
     mWindow.draw(startSequenceText);
-    mWindow.draw(heightText);
+
     for(int i = 0; i < spawnNum; i++){
         mWindow.draw(colliderMap.at(i)->sprite);
     }
     //draw all the objects of the current frame by calling draw method
+    mWindow.draw(heightText);
     mWindow.draw(uPlayer->sprite);
 
 
