@@ -111,8 +111,8 @@ void Game::update(sf::Time deltaTime, sf::Time now){
         obstacle* mSpawn;
         mSpawn = new obstacle;
         std::string s = "..\\Assets\\floating_eyebeast.png";
-        sf::Vector2f initialVelocity = sf::Vector2f(400.0,400.0);
-        sf::Vector2f initialPosition = sf::Vector2f(300.0,300.0);
+        sf::Vector2f initialVelocity = sf::Vector2f(100.0,100.0);
+        sf::Vector2f initialPosition = sf::Vector2f(300.0,-100.0);
         float rotationRate,pathEnd;
         rotationRate = 0.0;
         pathEnd = 300.0;
@@ -141,11 +141,10 @@ void Game::update(sf::Time deltaTime, sf::Time now){
     }
     //New player update sequence
     uPlayer->update(deltaTime);
-    int colliderMapSize = colliderMap->size();
-    if (colliderMapSize > 0){
-        for(int i =0; i < colliderMapSize; i++){
+    if (spawnNum > 0){
+        for(int i =0; i < spawnNum; i++){
 
-            obstacle* obs = colliderMap->at(i);
+            obstacle* obs = spawns.at(i);
             obs->update(deltaTime);
         }
     }
