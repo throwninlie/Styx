@@ -3,6 +3,7 @@
 #include "SFML/Graphics.hpp"
 #include "unit.hpp"
 #include <vector>
+#include <string>
 class Game{
     public:
             Game();
@@ -16,7 +17,7 @@ class Game{
     private:
         sf::RenderWindow mWindow;
         player* uPlayer;
-
+        sf::Vector2f lastPlayerPos;
         //Background* mBackground;
         //Global Clock
         sf::Clock* globalClock;
@@ -27,10 +28,14 @@ class Game{
         sf::Vector2f mWorldViewCenter;
         //scroll speed of view
         int mScrollSpeed = -10.0;
-
-
+        float scrollY = 0;
+        //time since last spawn
+        sf::Time lastSpawn = sf::seconds(0.0);
+        sf::Time lastHorizontalSpawn = sf::seconds(0.0);
         int spawnNum =0;
-
+        sf::Text startSequenceText;
+        sf::Font startSequenceFont;
+        sf::Text heightText;
         bool mIsMovingUp = false;
         bool mIsMovingDown = false;
         bool mIsMovingRight = false;
@@ -47,23 +52,63 @@ class Game{
 };
 int windowX = 640;
 int windowY = 480;
-Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(),globalClock(),mWorldView(),colliderMap(){
+Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(),globalClock(),mWorldView(),colliderMap(),lastPlayerPos(),scrollY(),
+startSequenceFont(),startSequenceText(){
 
     //started background stuff
 
+    //text
+    startSequenceFont.loadFromFile("..\\Assets\\font\\moonhouse.ttf");
+    //sf::Text startSequenceText(" SDFASGWE",startSequenceFont);
+    heightText.setFont(startSequenceFont);
+    heightText.setCharacterSize(30);
+    heightText.setColor(sf::Color::Green);
+    //
+    startSequenceText.setFont(startSequenceFont);
+    startSequenceText.setCharacterSize(100);
+    startSequenceText.setStyle(sf::Text::Bold);
+    startSequenceText.setColor(sf::Color::Green);
+    startSequenceText.setOrigin(windowX *-0.45, windowY * -0.2);
 
     //in the game class
 
     globalClock = new sf::Clock;
+    globalClock->restart();
     mWorldView.reset(sf::FloatRect(0, 0, windowX, windowY));
     mWorldViewCenter = mWorldView.getCenter();
+    scrollY = windowY;
     //Global positions, velocities, and accelerations
-    sf::Vector2f defaultPos(windowX*0.5, windowY);
+    sf::Vector2f defaultPos(windowX*0.5, windowY-250.0);
     sf::Vector2f defaultVel(0.f, 0.f);
     sf::Vector2f passiveAccel(0.f,100.f);
     uPlayer = new player;
     uPlayer->player_init("..\\Assets\\hexagonTiles\\Tiles\\alienYellow.png",defaultPos,defaultVel,passiveAccel,windowX,windowY,globalClock);
     uPlayer->sprite.scale(1.5,1.5);
+    lastPlayerPos = uPlayer->sprite.getPosition();
+
+    //draw horizontal platform to window first thing
+    obstacle* mSpawn;
+    mSpawn = new obstacle;
+    std::string s;
+    sf::Vector2f initialPosition,initialVelocity,relativeCenter;
+    relativeCenter = sf::Vector2f(0.0,mWorldViewCenter.y - windowY *0.5);
+    float rotationRate,pathEnd;
+    bool isMonster, spriteBool,platforms = false;
+    isMonster = false;
+    initialPosition = sf::Vector2f(0.5*windowX,windowY-25.0);
+    initialVelocity = sf::Vector2f(60.0,0.0);
+    s = "..\\Assets\\inkscape crap\\platform.png";
+    rotationRate = 0.0;
+    pathEnd = 500.0;
+    mHorizontalPlatform = false;
+    mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
+    mSpawn->sprite.scale(0.5,0.25);
+    mSpawn->setID(spawnNum);
+    mSpawn->setOrientation(90.0);
+    colliderMap[spawnNum] = mSpawn;
+    //spawns.push_back(mSpawn);
+    spawnNum +=1;
+
 }
 
 void Game::run(){
@@ -74,7 +119,7 @@ void Game::run(){
 
     //spawn sprite stuff
     sf::Time timeSinceLastSpawn = sf::Time::Zero;
-    sf::Time timePerSpawn = sf::seconds(1.0f);
+
 
 
     while(mWindow.isOpen()){
@@ -108,10 +153,87 @@ void Game::update(sf::Time deltaTime, sf::Time now){
     }if(mWantJump){uPlayer->jump();
     }
     //you can start scrolling the game
-    sf::Time scrollStart = sf::seconds(5.0f);
-    if(now.asSeconds() > scrollStart.asSeconds()){
-        mWorldView.move(0.f, mScrollSpeed * deltaTime.asSeconds());
+    sf::Time scrollStart = sf::seconds(10.0f);
+    float nowSeconds = now.asSeconds();
+    if (nowSeconds >= 1.5 && nowSeconds < 2.5){
+        startSequenceText.setString("1");
+
+    }else if (nowSeconds >= 2.5 && nowSeconds < 3.5){
+        startSequenceText.setString("2");
+
+    }else if (nowSeconds >= 3.5 && nowSeconds < 4.5){
+        startSequenceText.setString("3");
+
+    }else if (nowSeconds >= 4.5 && nowSeconds < 5.5){
+        startSequenceText.setString("GO!");
+
+    }else{
+        startSequenceText.setString("");
+    }
+
+    sf::Vector2f playerPos;
+    playerPos = uPlayer->sprite.getPosition();
+
+    heightText.setPosition(mWorldViewCenter);
+    sf::String heightTextString;
+    int height;
+    if(playerPos.y <= 0){
+        height = abs(playerPos.y) + windowY;
+
+    }else{
+        height = windowY - playerPos.y;
+    }
+    height = height / 250;
+
+    //std::wstring heightChar =std::to_wstring(height);
+    //heightTextString = sf::String(heightChar);
+    heightText.setString("Placeholder \n for Score");
+
+
+    if(nowSeconds > scrollStart.asSeconds()){
+        //instead of scrolling up, set the view to the player
+        //mWorldView.move(0.f, mScrollSpeed * deltaTime.asSeconds());
+
+        scrollY += mScrollSpeed*deltaTime.asSeconds();
+        mScrollSpeed = pow(nowSeconds - scrollStart.asSeconds(),0.5) * -25.0;
+        if(mScrollSpeed < -800){
+            //maxScrollSpeed
+            mScrollSpeed = -800;
+        }
+
+        mWorldView.move(0,mScrollSpeed*deltaTime.asSeconds());
+        //mWorldView.move(0.f,(playerPos.y - lastPlayerPos.y));
+
         mWorldViewCenter = mWorldView.getCenter();
+        lastPlayerPos = playerPos;
+    }
+    sf::Time timePerSpawn = sf::seconds(1.5f);
+    sf::Time horizontalSpawn = sf::seconds(15.0f);
+    if((now- timePerSpawn) > lastSpawn){
+        //spawn stuff
+        if((now - horizontalSpawn) > lastHorizontalSpawn){
+            mHorizontalPlatform = true;
+            lastHorizontalSpawn = now;
+        }
+        lastSpawn = now;
+        //pick 1 or 0.0
+        int num, spritesNum;
+        num = rand()% 2;
+        spritesNum = rand() %500;
+        if(num == 0){
+            //spawn left
+            mLeftPlatform = true;
+        }else if (num == 1){
+            //spawn right
+            mRightPlatform = true;
+        }
+        if(spritesNum < 365 && spritesNum > 355){
+            //spawn a star
+            mStarSprite = true;
+        }else if(spritesNum > 496 and spritesNum < 500){
+            //spawn a ghost
+            mSpawnSprite = true;
+        }
     }
 
     if(mSpawnSprite || mLeftPlatform || mRightPlatform || mHorizontalPlatform || mStarSprite){
@@ -130,13 +252,16 @@ void Game::update(sf::Time deltaTime, sf::Time now){
             spriteBool = true;
         }
         if(mSpawnSprite){
-             isMonster= true;
-            initialPosition = sf::Vector2f(windowX*0.5,-100.0);
+            isMonster= true;
+            initialPosition = sf::Vector2f(rand() %(windowX- 400) + 200.0,-100.0);
             initialVelocity = sf::Vector2f(70.0,70.0);
             s = "..\\Assets\\floating_eyebeast.png";
             rotationRate = 0.0;
+            //doesn't matter
             pathEnd = 300.0;
             mSpawnSprite = false;
+            initialPosition = initialPosition + relativeCenter;
+            mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
 
         }
         else if(mLeftPlatform){
@@ -145,8 +270,10 @@ void Game::update(sf::Time deltaTime, sf::Time now){
             initialVelocity = sf::Vector2f(0.0,50.0);
             s = "..\\Assets\\inkscape crap\\platform.png";
             rotationRate = 0.0;
-            pathEnd = 300.0;
+            pathEnd = 800.0;
             mLeftPlatform = false;
+            initialPosition = initialPosition + relativeCenter;
+            mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
 
         }else if(mRightPlatform){
             isMonster = false;
@@ -154,28 +281,35 @@ void Game::update(sf::Time deltaTime, sf::Time now){
             initialVelocity = sf::Vector2f(0.0,50.0);
             s = "..\\Assets\\inkscape crap\\platformmirror.png";
             rotationRate = 0.0;
-            pathEnd = 300.0;
+            pathEnd = 800.0;
             mRightPlatform = false;
+            initialPosition = initialPosition + relativeCenter;
+            mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
 
         }else if(mHorizontalPlatform){
             isMonster = false;
-            initialPosition = sf::Vector2f(rand() % windowX,-200.0);
+            initialPosition = sf::Vector2f(rand() % (windowX- 400) + 200.0,-200.0);
             initialVelocity = sf::Vector2f(50.0,0.0);
             s = "..\\Assets\\inkscape crap\\platform.png";
             rotationRate = 0.0;
-            pathEnd = 300.0;
+            pathEnd = 600.0;
+
             mHorizontalPlatform = false;
+            initialPosition = initialPosition + relativeCenter;
+            mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
+            mSpawn->setOrientation(90.0);
         }else if(mStarSprite){
             isMonster = false;
-            initialPosition = sf::Vector2f(rand() % windowX,-100.0);
-            initialVelocity = sf::Vector2f(rand() %60,rand() %60);
+            initialPosition = sf::Vector2f(rand() % (windowX- 400) + 200.0,-100.0);
+            initialVelocity = sf::Vector2f(rand() %60,rand() %60 + 10.0);
             s = "..\\Assets\\inkscape crap\\star.png";
             rotationRate = 5.0;
             pathEnd = (float)windowY;
             mStarSprite = false;
+            initialPosition = initialPosition + relativeCenter;
+            mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
         }
-        initialPosition = initialPosition + relativeCenter;
-        mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
+
         //sf::Vector2f randVec(rand() %windowX,rand() %windowY);
         if(spriteBool){
             mSpawn->sprite.scale(0.2,0.2);
@@ -184,9 +318,7 @@ void Game::update(sf::Time deltaTime, sf::Time now){
         }
         mSpawn->setID(spawnNum);
         //rotate if horizontal
-        if(mHorizontalPlatform && !mRightPlatform && !mLeftPlatform && !mSpawnSprite){
-            mSpawn->setOrientation(90.0);
-        }
+
         colliderMap[spawnNum] = mSpawn;
         //spawns.push_back(mSpawn);
         spawnNum +=1;
@@ -222,8 +354,6 @@ void Game::update(sf::Time deltaTime, sf::Time now){
             obs->update(deltaTime);
         }
     }
-
-
 
 }
 
@@ -279,7 +409,10 @@ void Game::render(){
     //clears window first
     mWindow.clear();
     mWindow.setView(mWorldView);
-    //draw spawns
+    //draw spawns and start text
+
+    mWindow.draw(startSequenceText);
+    mWindow.draw(heightText);
     for(int i = 0; i < spawnNum; i++){
         mWindow.draw(colliderMap.at(i)->sprite);
     }

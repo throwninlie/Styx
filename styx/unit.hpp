@@ -29,6 +29,7 @@ class player : public pSprite{
         bool pAccel_toggle_on, left, right, up, down, collided, wantJump;
         int xMax, yMax, xMin, yMin;
         float lastJump, jumpCooldown, now, orientation, lastCollision, jumpWindow;
+        float bounceCooldown = 0.10;
 
     public:
         void player_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, sf::Vector2f passiveAccel, int gameWindowX, int gameWindowY,sf::Clock* clock){
@@ -138,10 +139,14 @@ class player : public pSprite{
             }
         }
         void bounceX(){
-            vel.x = -vel.x;
+            if(now - lastCollision > bounceCooldown){
+                vel.x = -vel.x;
+            }
         }
         void bounceY(){
-            vel.y = -vel.y;
+            if(now - lastCollision > bounceCooldown){
+                vel.y = -vel.y;
+            }
         }
         void update(sf::Time deltaTime){
             //Update time
@@ -277,7 +282,7 @@ class obstacle : public pSprite{
         void setID(int newId){
             id = newId;
         }
-        sf::Vector2f find_player(player *playerPointer, sf::Vector2f pos){
+        void find_player(player *playerPointer, sf::Vector2f pos){
             direction = playerPointer->getPosition() - pos;
         }
         void update(sf::Time deltaTime){
@@ -291,23 +296,23 @@ class obstacle : public pSprite{
             //Check for path collision and change velocity accordingly
                 if(xTraveler){
                     if(pos.x < pBegin){
-                        pos.x = pBegin;
+                        //pos.x = pBegin;
                         vel.x = -vel.x;
                         vel.y = -vel.y;
                     }
                     if(pos.x > pEnd){
-                        pos.x = pBegin;
+                        //pos.x = pBegin;
                         vel.x = -vel.x;
                         vel.y = -vel.y;
                     }
                 }else{
                     if(pos.y < pBegin){
-                        pos.y = pBegin;
+                        //pos.y = pBegin;
                         vel.x = -vel.x;
                         vel.y = -vel.y;
                     }
                     if(pos.y > pEnd){
-                        pos.y = pEnd;
+                        //pos.y = pEnd;
                         vel.x = -vel.x;
                         vel.y = -vel.y;
                     }
