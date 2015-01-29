@@ -26,7 +26,7 @@ class Game{
         sf::View mWorldView;
         sf::Vector2f mWorldViewCenter;
         //scroll speed of view
-        int mScrollSpeed = -1.0;
+        int mScrollSpeed = -10.0;
 
 
         int spawnNum =0;
@@ -110,7 +110,7 @@ void Game::update(sf::Time deltaTime, sf::Time now){
     //you can start scrolling the game
     sf::Time scrollStart = sf::seconds(5.0f);
     if(now.asSeconds() > scrollStart.asSeconds()){
-        mWorldView.move(0.f, (now.asSeconds() - scrollStart.asSeconds()) * mScrollSpeed * deltaTime.asSeconds());
+        mWorldView.move(0.f, mScrollSpeed * deltaTime.asSeconds());
         mWorldViewCenter = mWorldView.getCenter();
     }
 
@@ -119,7 +119,7 @@ void Game::update(sf::Time deltaTime, sf::Time now){
         mSpawn = new obstacle;
         std::string s;
         sf::Vector2f initialPosition,initialVelocity,relativeCenter;
-        relativeCenter = sf::Vector2f(0.0,mWorldViewCenter.y);
+        relativeCenter = sf::Vector2f(0.0,mWorldViewCenter.y - windowY *0.5);
         float rotationRate,pathEnd;
         bool isMonster;
         if(mSpawnSprite){
@@ -167,7 +167,7 @@ void Game::update(sf::Time deltaTime, sf::Time now){
             pathEnd = (float)windowY;
             mStarSprite = false;
         }
-        initialPosition = initialPosition - relativeCenter;
+        initialPosition = initialPosition + relativeCenter;
         mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
         //sf::Vector2f randVec(rand() %windowX,rand() %windowY);
         if(mSpawnSprite || mStarSprite){
