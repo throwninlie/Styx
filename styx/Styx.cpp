@@ -24,6 +24,7 @@ class Game{
         std::map<int,obstacle*> colliderMap;
         //world view
         sf::View mWorldView;
+        sf::Vector2f mWorldViewCenter;
         //scroll speed of view
         int mScrollSpeed = -1.0;
 
@@ -55,6 +56,7 @@ Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(),globalCloc
 
     globalClock = new sf::Clock;
     mWorldView.reset(sf::FloatRect(0, 0, windowX, windowY));
+    mWorldViewCenter = mWorldView.getCenter();
     //Global positions, velocities, and accelerations
     sf::Vector2f defaultPos(windowX*0.5, windowY);
     sf::Vector2f defaultVel(0.f, 0.f);
@@ -109,13 +111,15 @@ void Game::update(sf::Time deltaTime, sf::Time now){
     sf::Time scrollStart = sf::seconds(5.0f);
     if(now.asSeconds() > scrollStart.asSeconds()){
         mWorldView.move(0.f, (now.asSeconds() - scrollStart.asSeconds()) * mScrollSpeed * deltaTime.asSeconds());
+        mWorldViewCenter = mWorldView.getCenter();
     }
 
     if(mSpawnSprite || mLeftPlatform || mRightPlatform || mHorizontalPlatform || mStarSprite){
         obstacle* mSpawn;
         mSpawn = new obstacle;
         std::string s;
-        sf::Vector2f initialPosition,initialVelocity;
+        sf::Vector2f initialPosition,initialVelocity,relativeCenter;
+        relativeCenter = sf::Vector2f(0.0,mWorldViewCenter.y);
         float rotationRate,pathEnd;
         bool isMonster;
         if(mSpawnSprite){
@@ -163,10 +167,14 @@ void Game::update(sf::Time deltaTime, sf::Time now){
             pathEnd = (float)windowY;
             mStarSprite = false;
         }
+        initialPosition = initialPosition - relativeCenter;
         mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
         //sf::Vector2f randVec(rand() %windowX,rand() %windowY);
-
-        mSpawn->sprite.scale(0.2,0.2);
+        if(mSpawnSprite || mStarSprite){
+            mSpawn->sprite.scale(0.2,0.2);
+        }else{
+            mSpawn->sprite.scale(0.5,0.25);
+        }
         mSpawn->setID(spawnNum);
         //rotate if horizontal
         if(mHorizontalPlatform && !mRightPlatform && !mLeftPlatform && !mSpawnSprite){
