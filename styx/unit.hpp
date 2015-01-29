@@ -177,14 +177,14 @@ class player : public pSprite{
             deltaP(deltaTime.asSeconds() * vel);
             //Check for boundary collisions
             if(pos.x > xMax){
-                pos.x = xMax;
-                vel.x = -0.7 * vel.x;
-                collision();
+                //pos.x = xMax;
+                //vel.x = -0.7 * vel.x;
+                //collision();
             }
             else if(pos.x < xMin){
-                pos.x = xMin;
-                vel.x = -0.7 * vel.x;
-                collision();
+                //pos.x = xMin;
+                //vel.x = -0.7 * vel.x;
+                //collision();
             }
             if(pos.y > yMax){
                 pos.y = yMax;
