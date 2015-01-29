@@ -21,13 +21,13 @@ class Game{
         //Global Clock
         sf::Clock* globalClock;
         //Global collider registry
-        std::map<int,obstacle*>* colliderMap;
+        std::map<int,obstacle*> colliderMap;
         //world view
         sf::View mWorldView;
         //scroll speed of view
         int mScrollSpeed = -1.0;
 
-        std::vector<obstacle*> spawns;
+
         int spawnNum =0;
 
         bool mIsMovingUp = false;
@@ -42,13 +42,13 @@ class Game{
 };
 int windowX = 640;
 int windowY = 480;
-Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(),globalClock(),mWorldView(){
+Game::Game():mWindow(sf::VideoMode(windowX,windowY),"Styx"),uPlayer(),globalClock(),mWorldView(),colliderMap(){
 
     //started background stuff
 
 
     //in the game class
-    colliderMap = new std::map<int,obstacle*>;
+
     globalClock = new sf::Clock;
     mWorldView.reset(sf::FloatRect(0, 0, windowX, windowY));
     //Global positions, velocities, and accelerations
@@ -118,21 +118,23 @@ void Game::update(sf::Time deltaTime, sf::Time now){
         pathEnd = 300.0;
         bool isMonster = true;
 
-        mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd,colliderMap, isMonster, uPlayer);
+        mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
         //sf::Vector2f randVec(rand() %windowX,rand() %windowY);
 
         //mSpawn->sprite_init("..\\Assets\\floating_eyebeast.png",randVec,false);
         mSpawn->sprite.scale(0.2,0.2);
-        spawns.push_back(mSpawn);
+        mSpawn->setID(spawnNum);
+        colliderMap[spawnNum] = mSpawn;
+        //spawns.push_back(mSpawn);
         spawnNum +=1;
         mSpawnSprite = false;
     }
     //Check player for collisions with obstacles/monsters
             intersects = false;
-    if(colliderMap->size() != 0){
-            for(int i = 0; i < colliderMap->size(); i++){
+    if(spawnNum != 0){
+            for(int i = 0; i < spawnNum; i++){
                 //Use SFML rectangle intersection library for rectangle collision detection
-                intersects = uPlayer->sprite.getGlobalBounds().intersects(colliderMap->at(i)->sprite.getGlobalBounds(),boolRect);
+                intersects = uPlayer->sprite.getGlobalBounds().intersects(colliderMap.at(i)->sprite.getGlobalBounds(),boolRect);
                 if(intersects){
                     uPlayer->collision(); //Reset collision timer
                     break;
@@ -141,13 +143,15 @@ void Game::update(sf::Time deltaTime, sf::Time now){
     }
     //New player update sequence
     uPlayer->update(deltaTime);
-    if (spawnNum > 0){
-        for(int i =0; i < spawnNum; i++){
-
-            obstacle* obs = spawns.at(i);
+    int colliderMapSize = colliderMap.size();
+    if(spawnNum > 0){
+        for(std::map<int,obstacle*>::iterator it=colliderMap.begin(); it!=colliderMap.end(); ++it){
+            obstacle *obs = it->second;
             obs->update(deltaTime);
         }
     }
+
+
 
 }
 
@@ -199,7 +203,7 @@ void Game::render(){
     mWindow.draw(uPlayer->sprite);
     //draw spawns
     for(int i = 0; i < spawnNum; i++){
-        mWindow.draw(spawns.at(i)->sprite);
+        mWindow.draw(colliderMap.at(i)->sprite);
     }
 
     //after drawing everything, display it on the screen
