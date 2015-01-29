@@ -261,6 +261,9 @@ class obstacle : public pSprite{
         void deltaP(sf::Vector2f deltaPosition){
             pos += deltaPosition;
         }
+        void setOrientation(float newOrientation){
+            orientation = newOrientation;
+        }
         int getID(){
             return id;
         }
@@ -297,7 +300,7 @@ class obstacle : public pSprite{
                         vel.y = -vel.y;
                     }
                     if(pos.y > pEnd){
-                        pos.y = pBegin;
+                        pos.y = pEnd;
                         vel.x = -vel.x;
                         vel.y = -vel.y;
                     }
