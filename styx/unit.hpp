@@ -222,11 +222,12 @@ class obstacle : public pSprite{
            //Set initial conditions
            pos = initialPosition;
            vel = initialVelocity;
+           orientation = 0;
            hitbox = sprite.getGlobalBounds();
            playerPointer = playerP;
            velMag = (float)(pow(pow((double)vel.x,2)+pow((double)vel.y,2),0.5));
            if(!monster){ //If this obstacle is not a monster, set variables relevant to a platform
-                hitbox.width = hitbox.width / 2.0;
+                hitbox.width = hitbox.width / 4.0;
                 rotRate = rotationRate;
                 //If initialized with x-velocity, this is an x-traveling obstacle; false => y-traveling
                 if(vel.x != 0.0){
@@ -248,6 +249,9 @@ class obstacle : public pSprite{
         }
         bool getPlatformType(){
             return xTraveler;
+        }
+        sf::FloatRect getHitBox(){
+            return hitbox;
         }
         float getRotRate(){
             return rotRate;
@@ -310,6 +314,8 @@ class obstacle : public pSprite{
                 }
                 //Update sprite's position and rotation
                 sprite.setPosition(pos.x, pos.y);
+                hitbox = sprite.getGlobalBounds();
+                hitbox.width /= 2.0;
             }else{ //If monster, move like a monster
                 //Turn toward player
                 find_player(playerPointer,pos);
@@ -324,7 +330,9 @@ class obstacle : public pSprite{
                 deltaP(deltaTime.asSeconds() * vel);
                 sprite.setPosition(pos.x, pos.y);
                 sprite.setRotation(orientation);
+                hitbox = sprite.getGlobalBounds();
             }
+            hitbox = sprite.getGlobalBounds();
         }
 };
 

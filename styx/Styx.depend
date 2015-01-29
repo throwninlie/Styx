@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1422470029 source:c:\users\-\desktop\classes\6.179\project\styx\styx\styx\styx.cpp
+1422514671 source:c:\users\-\desktop\classes\6.179\project\styx\styx\styx\styx.cpp
 	<math.h>
 	"SFML/Graphics.hpp"
 	"unit.hpp"
@@ -15,7 +15,7 @@
 
 1422408996 c:\users\-\desktop\classes\6.179\project\styx\styx\styx\psprite.hpp
 
-1422472793 c:\users\-\desktop\classes\6.179\project\styx\styx\styx\unit.hpp
+1422514966 c:\users\-\desktop\classes\6.179\project\styx\styx\styx\unit.hpp
 
 1422510767 c:\users\er\dropbox\6.179projectstyx\styx\styx\unit.hpp
 

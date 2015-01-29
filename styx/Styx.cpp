@@ -197,7 +197,7 @@ void Game::update(sf::Time deltaTime, sf::Time now){
     if(spawnNum != 0){
             for(int i = 0; i < spawnNum; i++){
                 //Use SFML rectangle intersection library for rectangle collision detection
-                intersects = uPlayer->sprite.getGlobalBounds().intersects(colliderMap.at(i)->sprite.getGlobalBounds(),boolRect);
+                intersects = uPlayer->sprite.getGlobalBounds().intersects(colliderMap.at(i)->getHitBox(),boolRect);
                 if(intersects){
                     uPlayer->collision(); //Reset collision timer
                     if(colliderMap.at(i)->monster){
