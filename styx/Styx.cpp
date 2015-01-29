@@ -27,7 +27,7 @@ class Game{
         sf::View mWorldView;
         sf::Vector2f mWorldViewCenter;
         //scroll speed of view
-        int mScrollSpeed = -10.0;
+        int mScrollSpeed = -12.0;
         int score;
         float height;
         float scrollY = 0;
@@ -185,17 +185,20 @@ void Game::update(sf::Time deltaTime, sf::Time now){
             height+= (abs(playerPos.y) - abs(lastPlayerPos.y)) - height;
         }else{
             //keep score the same
-            height = height;
+            height = 0;
         }
 
 
     }else{
-        height = height;
+        height = 0;
         //score = windowY - playerPos.y;
         //do nothing
     }
-    score = height /5;
+    score = height*2.5  + score;
     char buff[100];
+    if (score < 0){
+        score = 0;
+    }
     sprintf(buff, "Score:%d", score);
     std::string stringy = buff;
     //std::wstring heightChar =std::to_wstring(height);
@@ -246,7 +249,7 @@ void Game::update(sf::Time deltaTime, sf::Time now){
         if(spritesNum < 365 && spritesNum > 355){
             //spawn a star
             mStarSprite = true;
-        }else if(spritesNum > 496 and spritesNum < 500){
+        }else if(spritesNum > 490 and spritesNum < 500){
             //spawn a ghost
             mSpawnSprite = true;
         }
@@ -287,6 +290,7 @@ void Game::update(sf::Time deltaTime, sf::Time now){
             s = "..\\Assets\\inkscape crap\\platform.png";
             rotationRate = 0.0;
             pathEnd = 800.0;
+
             mLeftPlatform = false;
             initialPosition = initialPosition + relativeCenter;
             mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
@@ -309,7 +313,6 @@ void Game::update(sf::Time deltaTime, sf::Time now){
             s = "..\\Assets\\inkscape crap\\platform.png";
             rotationRate = 0.0;
             pathEnd = 600.0;
-
             mHorizontalPlatform = false;
             initialPosition = initialPosition + relativeCenter;
             mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
@@ -351,7 +354,7 @@ void Game::update(sf::Time deltaTime, sf::Time now){
                     if(colliderMap.at(i)->monster){
                         //React to touching monster
                         //subtracts from score
-                        score -= 5;
+                        score -= (float)pow(nowSeconds,0.5);
                     }else if(colliderMap.at(i)->getPlatformType() == true){
                         //React to touching horizontal platform
                         uPlayer->bounceY();
@@ -410,15 +413,21 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed){
         mWantJump = isPressed;
     }else if(key == sf::Keyboard::Return){
         mSpawnSprite = isPressed;
+        score -= 1;
     }else if(key == sf::Keyboard::Equal){
         mRightPlatform = isPressed;
+        score -= 10;
     }else if(key == sf::Keyboard::Dash){
         mLeftPlatform = isPressed;
+        score -= 10;
     }else if(key == sf::Keyboard::BackSpace){
         mHorizontalPlatform = isPressed;
+        score -= 10;
     }else if(key == sf::Keyboard::Delete){
         mStarSprite = isPressed;
+        score -= 1;
     }
+
 }
 void Game::render(){
 
