@@ -207,6 +207,7 @@ class player : public pSprite{
 class obstacle : public pSprite{
     private:
         sf::Vector2f pos, vel, direction, finalDir;
+        sf::FloatRect hitbox;
         float rotRate, pBegin, pEnd, orientation,dirMagnitude;
         float velMag;
         int id;
@@ -221,9 +222,11 @@ class obstacle : public pSprite{
            //Set initial conditions
            pos = initialPosition;
            vel = initialVelocity;
+           hitbox = sprite.getGlobalBounds();
            playerPointer = playerP;
            velMag = (float)(pow(pow((double)vel.x,2)+pow((double)vel.y,2),0.5));
            if(!monster){ //If this obstacle is not a monster, set variables relevant to a platform
+                hitbox.width = hitbox.width / 2.0;
                 rotRate = rotationRate;
                 //If initialized with x-velocity, this is an x-traveling obstacle; false => y-traveling
                 if(vel.x != 0.0){
