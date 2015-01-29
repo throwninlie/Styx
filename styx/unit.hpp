@@ -137,6 +137,12 @@ class player : public pSprite{
                 wantJump = true;
             }
         }
+        void bounceX(){
+            vel.x = -vel.x;
+        }
+        void bounceY(){
+            vel.y = -vel.y;
+        }
         void update(sf::Time deltaTime){
             //Update time
             now = globalClock->getElapsedTime().asSeconds();
@@ -236,6 +242,9 @@ class obstacle : public pSprite{
         }
         sf::Vector2f getVelocity(){
             return vel;
+        }
+        bool getPlatformType(){
+            return xTraveler;
         }
         float getRotRate(){
             return rotRate;
