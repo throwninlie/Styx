@@ -38,6 +38,10 @@ class Game{
         bool mRotateLeft = false;
         bool mRotateRight = false;
         bool mWantJump = false;
+        bool mLeftPlatform = false;
+        bool mRightPlatform = false;
+        bool mHorizontalPlatform = false;
+        bool mStarSprite = false;
 
 };
 int windowX = 640;
@@ -107,30 +111,74 @@ void Game::update(sf::Time deltaTime, sf::Time now){
         mWorldView.move(0.f, (now.asSeconds() - scrollStart.asSeconds()) * mScrollSpeed * deltaTime.asSeconds());
     }
 
-    if(mSpawnSprite){
+    if(mSpawnSprite || mLeftPlatform || mRightPlatform || mHorizontalPlatform || mStarSprite){
         obstacle* mSpawn;
         mSpawn = new obstacle;
-        std::string s = "..\\Assets\\floating_eyebeast.png";
-        sf::Vector2f initialVelocity = sf::Vector2f(100.0,100.0);
-        sf::Vector2f initialPosition = sf::Vector2f(300.0,-100.0);
+        std::string s;
+        sf::Vector2f initialPosition,initialVelocity;
         float rotationRate,pathEnd;
-        rotationRate = 0.0;
-        pathEnd = 300.0;
-        bool isMonster = true;
+        bool isMonster;
+        if(mSpawnSprite){
+             isMonster= true;
+            initialPosition = sf::Vector2f(windowX*0.5,-100.0);
+            initialVelocity = sf::Vector2f(70.0,70.0);
+            s = "..\\Assets\\floating_eyebeast.png";
+            rotationRate = 0.0;
+            pathEnd = 300.0;
+            mSpawnSprite = false;
 
+        }
+        else if(mLeftPlatform){
+            isMonster = false;
+            initialPosition = sf::Vector2f(0,-250.0);
+            initialVelocity = sf::Vector2f(0.0,50.0);
+            s = "..\\Assets\\inkscape crap\\platform.png";
+            rotationRate = 0.0;
+            pathEnd = 300.0;
+            mLeftPlatform = false;
+
+        }else if(mRightPlatform){
+            isMonster = false;
+            initialPosition = sf::Vector2f(windowX,-250.0);
+            initialVelocity = sf::Vector2f(0.0,50.0);
+            s = "..\\Assets\\inkscape crap\\platformmirror.png";
+            rotationRate = 0.0;
+            pathEnd = 300.0;
+            mRightPlatform = false;
+
+        }else if(mHorizontalPlatform){
+            isMonster = false;
+            initialPosition = sf::Vector2f(rand() % windowX,-200.0);
+            initialVelocity = sf::Vector2f(50.0,0.0);
+            s = "..\\Assets\\inkscape crap\\platform.png";
+            rotationRate = 0.0;
+            pathEnd = 300.0;
+            mHorizontalPlatform = false;
+        }else if(mStarSprite){
+            isMonster = false;
+            initialPosition = sf::Vector2f(rand() % windowX,-100.0);
+            initialVelocity = sf::Vector2f(rand() %60,rand() %60);
+            s = "..\\Assets\\inkscape crap\\star.png";
+            rotationRate = 5.0;
+            pathEnd = (float)windowY;
+            mStarSprite = false;
+        }
         mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
         //sf::Vector2f randVec(rand() %windowX,rand() %windowY);
 
-        //mSpawn->sprite_init("..\\Assets\\floating_eyebeast.png",randVec,false);
         mSpawn->sprite.scale(0.2,0.2);
         mSpawn->setID(spawnNum);
+        //rotate if horizontal
+        if(mHorizontalPlatform && !mRightPlatform && !mLeftPlatform && !mSpawnSprite){
+            mSpawn->setOrientation(90.0);
+        }
         colliderMap[spawnNum] = mSpawn;
         //spawns.push_back(mSpawn);
         spawnNum +=1;
-        mSpawnSprite = false;
+
     }
     //Check player for collisions with obstacles/monsters
-            intersects = false;
+    intersects = false;
     if(spawnNum != 0){
             for(int i = 0; i < spawnNum; i++){
                 //Use SFML rectangle intersection library for rectangle collision detection
@@ -190,6 +238,14 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed){
         mWantJump = isPressed;
     }else if(key == sf::Keyboard::Return){
         mSpawnSprite = isPressed;
+    }else if(key == sf::Keyboard::Equal){
+        mRightPlatform = isPressed;
+    }else if(key == sf::Keyboard::Dash){
+        mLeftPlatform = isPressed;
+    }else if(key == sf::Keyboard::BackSpace){
+        mHorizontalPlatform = isPressed;
+    }else if(key == sf::Keyboard::Delete){
+        mStarSprite = isPressed;
     }
 }
 void Game::render(){
