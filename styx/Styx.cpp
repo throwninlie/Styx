@@ -185,6 +185,15 @@ void Game::update(sf::Time deltaTime, sf::Time now){
                 intersects = uPlayer->sprite.getGlobalBounds().intersects(colliderMap.at(i)->sprite.getGlobalBounds(),boolRect);
                 if(intersects){
                     uPlayer->collision(); //Reset collision timer
+                    if(colliderMap.at(i)->monster){
+                        //React to touching monster
+                    }else if(colliderMap.at(i)->getPlatformType() == true){
+                        //React to touching horizontal platform
+                        uPlayer->bounceY();
+                    }else if(colliderMap.at(i)->getPlatformType()== false){
+                        //React to touching vertical platform
+                        uPlayer->bounceX();
+                    }
                     break;
                 }
             }
