@@ -28,7 +28,8 @@ class Game{
         sf::Vector2f mWorldViewCenter;
         //scroll speed of view
         int mScrollSpeed = -10.0;
-        int score = 0;
+        int score;
+        float height;
         float scrollY = 0;
         //time since last spawn
         sf::Time lastSpawn = sf::seconds(0.0);
@@ -64,7 +65,7 @@ startSequenceFont(),startSequenceText(){
     heightText.setFont(startSequenceFont);
     heightText.setCharacterSize(30);
     heightText.setColor(sf::Color::Green);
-
+    score = 0;
     //
     startSequenceText.setFont(startSequenceFont);
     startSequenceText.setCharacterSize(100);
@@ -179,15 +180,21 @@ void Game::update(sf::Time deltaTime, sf::Time now){
 
     sf::String heightTextString;
 
-    if(playerPos.y <= 0){
-        score +=  (abs(playerPos.y) - windowY) - score;
+    if(playerPos.y < 0){
+        if((abs(playerPos.y) - abs(lastPlayerPos.y)) > 0){
+            height+= (abs(playerPos.y) - abs(lastPlayerPos.y)) - height;
+        }else{
+            //keep score the same
+            height = height;
+        }
+
 
     }else{
-
+        height = height;
         //score = windowY - playerPos.y;
         //do nothing
     }
-    score = score / 100;
+    score = height /5;
     char buff[100];
     sprintf(buff, "Score:%d", score);
     std::string stringy = buff;
@@ -205,9 +212,9 @@ void Game::update(sf::Time deltaTime, sf::Time now){
 
         scrollY += mScrollSpeed*deltaTime.asSeconds();
         mScrollSpeed = pow(nowSeconds - scrollStart.asSeconds(),0.5) * -25.0;
-        if(mScrollSpeed < -800){
+        if(mScrollSpeed < -400){
             //maxScrollSpeed
-            mScrollSpeed = -800;
+            mScrollSpeed = -400;
         }
 
         mWorldView.move(0,mScrollSpeed*deltaTime.asSeconds());
