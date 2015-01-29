@@ -27,7 +27,7 @@ class Game{
         sf::View mWorldView;
         sf::Vector2f mWorldViewCenter;
         //scroll speed of view
-        int mScrollSpeed = -12.0;
+        int mScrollSpeed = -35.0;
         int score;
         float height;
         float scrollY = 0;
@@ -83,7 +83,7 @@ startSequenceFont(),startSequenceText(){
     //Global positions, velocities, and accelerations
     sf::Vector2f defaultPos(windowX*0.5, windowY-250.0);
     sf::Vector2f defaultVel(0.f, 0.f);
-    sf::Vector2f passiveAccel(0.f,100.f);
+    sf::Vector2f passiveAccel(0.f,200.f);
     uPlayer = new player;
     uPlayer->player_init("..\\Assets\\hexagonTiles\\Tiles\\alienYellow.png",defaultPos,defaultVel,passiveAccel,windowX,windowY,globalClock);
     uPlayer->sprite.scale(1.5,1.5);

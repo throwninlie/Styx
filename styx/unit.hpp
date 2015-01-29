@@ -24,7 +24,7 @@ class pSprite{
 
 class player : public pSprite{
     private:
-        pSprite* miniMe;
+        ;
         sf::Vector2f pos, vel, velMax, pAcc, maxAcc, localAcc, lastAcc, jumpMagnitude;
         sf::Clock* globalClock;
         bool pAccel_toggle_on, left, right, up, down, collided, wantJump;
@@ -33,6 +33,7 @@ class player : public pSprite{
         float bounceCooldown = 0.10;
 
     public:
+        pSprite* miniMe;
         void player_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, sf::Vector2f passiveAccel, int gameWindowX, int gameWindowY,sf::Clock* clock){
             pos = initialPosition;   //Set initial conditions
             vel = initialVelocity;
