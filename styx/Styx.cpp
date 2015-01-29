@@ -216,7 +216,7 @@ void Game::update(sf::Time deltaTime, sf::Time now){
         mWorldViewCenter = mWorldView.getCenter();
         lastPlayerPos = playerPos;
     }
-    sf::Time timePerSpawn = sf::seconds(1.5f);
+    sf::Time timePerSpawn = sf::seconds(1.2f);
     sf::Time horizontalSpawn = sf::seconds(15.0f);
     if((now- timePerSpawn) > lastSpawn){
         //spawn stuff
