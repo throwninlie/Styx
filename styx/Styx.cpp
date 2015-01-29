@@ -122,6 +122,10 @@ void Game::update(sf::Time deltaTime, sf::Time now){
         relativeCenter = sf::Vector2f(0.0,mWorldViewCenter.y - windowY *0.5);
         float rotationRate,pathEnd;
         bool isMonster;
+        bool platforms = false;
+        if(mLeftPlatform || mRightPlatform || mHorizontalPlatform){
+            platforms = true;
+        }
         if(mSpawnSprite){
              isMonster= true;
             initialPosition = sf::Vector2f(windowX*0.5,-100.0);
@@ -170,7 +174,7 @@ void Game::update(sf::Time deltaTime, sf::Time now){
         initialPosition = initialPosition + relativeCenter;
         mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
         //sf::Vector2f randVec(rand() %windowX,rand() %windowY);
-        if(mSpawnSprite || mStarSprite){
+        if(mSpawnSprite || mStarSprite && !platforms){
             mSpawn->sprite.scale(0.2,0.2);
         }else{
             mSpawn->sprite.scale(0.5,0.25);
