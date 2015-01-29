@@ -28,7 +28,7 @@ class Game{
         sf::Vector2f mWorldViewCenter;
         //scroll speed of view
         int mScrollSpeed = -10.0;
-        int score;
+        int score = 0;
         float scrollY = 0;
         //time since last spawn
         sf::Time lastSpawn = sf::seconds(0.0);
@@ -180,10 +180,12 @@ void Game::update(sf::Time deltaTime, sf::Time now){
     sf::String heightTextString;
 
     if(playerPos.y <= 0){
-        score = abs(playerPos.y) + windowY;
+        score +=  (abs(playerPos.y) - windowY) - score;
 
     }else{
-        score = windowY - playerPos.y;
+
+        //score = windowY - playerPos.y;
+        //do nothing
     }
     score = score / 100;
     char buff[100];
