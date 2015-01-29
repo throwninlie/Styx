@@ -206,7 +206,9 @@ void Game::update(sf::Time deltaTime, sf::Time now){
     heightText.setString(heightTextString);
 
     heightText.setPosition(10,mWorldViewCenter.y-windowY*0.5-10);
-
+    //sets rotation sprite
+    uPlayer->miniMe->sprite.setPosition(10.0, (mWorldViewCenter.y-windowY*0.5)-40);
+    //uPlayer->miniMe.(uPlayer->getOrientation());
 
 
     if(nowSeconds > scrollStart.asSeconds()){
@@ -444,7 +446,10 @@ void Game::render(){
         mWindow.draw(colliderMap.at(i)->sprite);
     }
     //draw all the objects of the current frame by calling draw method
+
+
     mWindow.draw(heightText);
+    mWindow.draw(uPlayer->miniMe->sprite);
     mWindow.draw(uPlayer->sprite);
 
 
