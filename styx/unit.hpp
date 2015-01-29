@@ -29,6 +29,7 @@ class player : public pSprite{
         bool pAccel_toggle_on, left, right, up, down, collided, wantJump;
         int xMax, yMax, xMin, yMin;
         float lastJump, jumpCooldown, now, orientation, lastCollision, jumpWindow;
+
     public:
         void player_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, sf::Vector2f passiveAccel, int gameWindowX, int gameWindowY,sf::Clock* clock){
             pos = initialPosition;   //Set initial conditions
@@ -51,6 +52,7 @@ class player : public pSprite{
             jumpMagnitude.y = 400.f;
             orientation = 0.0;
             jumpWindow = 0.1; //Window of time after collision during which jumping is allowed
+
         }
         void addLocalAccX(float accX){ //Functions to read and change various properties
             localAcc.x += accX;
@@ -199,20 +201,22 @@ class player : public pSprite{
 class obstacle : public pSprite{
     private:
         sf::Vector2f pos, vel, direction, finalDir;
-        float rotRate, pBegin, pEnd, orientation, magnitude;
+        float rotRate, pBegin, pEnd, orientation,dirMagnitude;
+        float velMag;
         int id;
         bool xTraveler;
         player* playerPointer;
     public:
-        void obstacle_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, float rotationRate,float pathEnd,std::map<int,obstacle*>* colliderMap, bool isMonster, player* playerP){
+        void obstacle_init(std::string s,sf::Vector2f initialPosition, sf::Vector2f initialVelocity, float rotationRate,float pathEnd, bool isMonster, player* playerP){
            //Initialize sprite object
            sprite_init(s,pos,isMonster);
            //Assign identification number
-           id = colliderMap->size() + 1;
+           //id = colliderMap.size() + 1;
            //Set initial conditions
            pos = initialPosition;
            vel = initialVelocity;
            playerPointer = playerP;
+           velMag = (float)(pow(pow((double)vel.x,2)+pow((double)vel.y,2),0.5));
            if(!monster){ //If this obstacle is not a monster, set variables relevant to a platform
                 rotRate = rotationRate;
                 //If initialized with x-velocity, this is an x-traveling obstacle; false => y-traveling
@@ -248,9 +252,14 @@ class obstacle : public pSprite{
         void deltaP(sf::Vector2f deltaPosition){
             pos += deltaPosition;
         }
-        sf::Vector2f find_player(player *playerPointer, sf::Vector2f ourPos){
-            direction = playerPointer->getPosition() - ourPos;
-            return direction;
+        int getID(){
+            return id;
+        }
+        void setID(int newId){
+            id = newId;
+        }
+        sf::Vector2f find_player(player *playerPointer, sf::Vector2f pos){
+            direction = playerPointer->getPosition() - pos;
         }
         void update(sf::Time deltaTime){
             if(!monster){ //If not monster, move like an obstacle
@@ -289,9 +298,11 @@ class obstacle : public pSprite{
             }else{ //If monster, move like a monster
                 //Turn toward player
                 find_player(playerPointer,pos);
-                magnitude = (float)pow(pow((double)direction.x,2) + pow((double)direction.y,2),0.5);
-                finalDir = direction / magnitude;
+                dirMagnitude = (float)pow(pow((double)direction.x,2) + pow((double)direction.y,2),0.5);
+                finalDir = direction / dirMagnitude;
                 orientation = (float)atan((double)finalDir.x/(double)finalDir.y) * 180.0/M_PI;
+                vel = velMag * finalDir;
+                //vel = sf::Vector2f(400.0,400.0);
                 //
                 deltaP(deltaTime.asSeconds() * vel);
                 sprite.setPosition(pos.x, pos.y);
