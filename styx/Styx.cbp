@@ -31,8 +31,11 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="Monster.h" />
+		<Unit filename="ResourceManager.hpp" />
 		<Unit filename="Styx.cpp" />
 		<Unit filename="pSprite.hpp" />
+		<Unit filename="unit.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

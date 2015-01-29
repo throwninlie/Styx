@@ -264,12 +264,14 @@ void Game::render(){
     //clears window first
     mWindow.clear();
     mWindow.setView(mWorldView);
-    //draw all the objects of the current frame by calling draw method
-    mWindow.draw(uPlayer->sprite);
     //draw spawns
     for(int i = 0; i < spawnNum; i++){
         mWindow.draw(colliderMap.at(i)->sprite);
     }
+    //draw all the objects of the current frame by calling draw method
+    mWindow.draw(uPlayer->sprite);
+
+
 
     //after drawing everything, display it on the screen
     mWindow.display();

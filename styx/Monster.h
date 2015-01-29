@@ -21,6 +21,7 @@ class Monster::public obstacle{
             direction = player->pos - ourPos;
             return direction;
         }
+
         magnitude = pow(pow(direction.x,2) + pow(direction.y,2),0.5);
         finalDir = direction / magnitude;
         orientation = atan(finalDir.x/finalDir.y) * 180.0/M_PI;
