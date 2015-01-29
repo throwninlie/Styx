@@ -300,10 +300,12 @@ class obstacle : public pSprite{
                 find_player(playerPointer,pos);
                 dirMagnitude = (float)pow(pow((double)direction.x,2) + pow((double)direction.y,2),0.5);
                 finalDir = direction / dirMagnitude;
-                orientation = (float)atan((double)finalDir.x/(double)finalDir.y) * 180.0/M_PI;
+                orientation = 180+atan2f(finalDir.y,finalDir.x) * 180.0/M_PI ;
+
                 vel = velMag * finalDir;
+
                 //vel = sf::Vector2f(400.0,400.0);
-                //
+
                 deltaP(deltaTime.asSeconds() * vel);
                 sprite.setPosition(pos.x, pos.y);
                 sprite.setRotation(orientation);
