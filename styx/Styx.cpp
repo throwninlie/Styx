@@ -121,10 +121,13 @@ void Game::update(sf::Time deltaTime, sf::Time now){
         sf::Vector2f initialPosition,initialVelocity,relativeCenter;
         relativeCenter = sf::Vector2f(0.0,mWorldViewCenter.y - windowY *0.5);
         float rotationRate,pathEnd;
-        bool isMonster;
-        bool platforms = false;
+        bool isMonster, spriteBool,platforms = false;
+
         if(mLeftPlatform || mRightPlatform || mHorizontalPlatform){
             platforms = true;
+        }
+        if(mSpawnSprite || mStarSprite){
+            spriteBool = true;
         }
         if(mSpawnSprite){
              isMonster= true;
@@ -174,9 +177,9 @@ void Game::update(sf::Time deltaTime, sf::Time now){
         initialPosition = initialPosition + relativeCenter;
         mSpawn->obstacle_init(s, initialPosition,initialVelocity, rotationRate, pathEnd, isMonster, uPlayer);
         //sf::Vector2f randVec(rand() %windowX,rand() %windowY);
-        if(mSpawnSprite || mStarSprite && !platforms){
+        if(spriteBool){
             mSpawn->sprite.scale(0.2,0.2);
-        }else{
+        }else if(platforms && !spriteBool) {
             mSpawn->sprite.scale(0.5,0.25);
         }
         mSpawn->setID(spawnNum);
